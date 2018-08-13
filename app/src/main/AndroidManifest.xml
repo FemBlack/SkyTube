@@ -41,7 +41,7 @@
 		</activity>
 		<activity
 			android:name=".gui.activities.YouTubePlayerActivity"
-			android:configChanges="keyboardHidden|screenSize"
+			android:configChanges="orientation|keyboardHidden|screenSize"
 			android:theme="@style/VideoPlayerActivityTheme">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>

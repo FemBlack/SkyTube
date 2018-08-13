@@ -64,6 +64,10 @@ import static free.rm.skytube.app.SkyTubeApp.getStr;
  */
 public class YouTubeVideo implements Serializable {
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	/**
 	 * YouTube video ID.
 	 */
@@ -469,6 +473,9 @@ public class YouTubeVideo implements Serializable {
 	 *
 	 * @return Uri
 	 */
+	public Uri getFileUri(boolean isVideo) {
+		return DownloadedVideosDb.getVideoDownloadsDb().getVideoFileUri(this,isVideo);
+	}
 	public Uri getFileUri() {
 		return DownloadedVideosDb.getVideoDownloadsDb().getVideoFileUri(this);
 	}
@@ -481,6 +488,10 @@ public class YouTubeVideo implements Serializable {
 	 */
 	public boolean isDownloaded() {
 		return DownloadedVideosDb.getVideoDownloadsDb().isVideoDownloaded(YouTubeVideo.this);
+	}
+
+	public boolean isDownloaded(final boolean isVideo) {
+		return DownloadedVideosDb.getVideoDownloadsDb().isVideoDownloaded(YouTubeVideo.this,isVideo);
 	}
 
 
@@ -511,7 +522,7 @@ public class YouTubeVideo implements Serializable {
 
 
 			private int getAllowedNetworkTypesFlags() {
-				boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(getStr(R.string.pref_key_allow_mobile_downloads), false);
+				boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(getStr(R.string.pref_key_allow_mobile_downloads), true);
 				int flags = DownloadManager.Request.NETWORK_WIFI;
 				if (allowDownloadsOnMobile)
 					flags = flags | DownloadManager.Request.NETWORK_MOBILE;

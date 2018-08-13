@@ -28,12 +28,11 @@ import free.rm.skytube.businessobjects.AsyncTaskParallel;
 import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.businessobjects.db.BookmarksDb;
 import free.rm.skytube.gui.businessobjects.adapters.OrderableVideoGridAdapter;
-import free.rm.skytube.gui.businessobjects.fragments.OrderableVideosGridFragment;
 
 /**
  * Fragment that displays bookmarked videos.
  */
-public class BookmarksFragment extends OrderableVideosGridFragment implements BookmarksDb.BookmarksDbListener {
+public class BookmarksFragment extends VideosGridFragment implements BookmarksDb.BookmarksDbListener {
 	@BindView(R.id.noBookmarkedVideosText)
 	View noBookmarkedVideosText;
 

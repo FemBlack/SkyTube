@@ -32,10 +32,10 @@
 	      app:showAsAction="never"/>
 
 	<item android:id="@+id/download_video"
-		  android:title="@string/download_video"
+		  android:title="@string/whatsapp_status_video"
 		  app:showAsAction="never"/>
 
-	<item android:id="@+id/block_channel"
+	<!--<item android:id="@+id/block_channel"
 		android:title="@string/block_channel"
-		app:showAsAction="never"/>
+		app:showAsAction="never"/>-->
 </menu>

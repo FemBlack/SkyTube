@@ -76,7 +76,7 @@ public class SearchVideoGridFragment extends VideosGridFragment {
 
 		mAdView = view.findViewById(R.id.adView);
 		AdRequest.Builder adRequest = new AdRequest.Builder();
-		adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
 		mAdView.loadAd(adRequest.build());
 
 
@@ -132,5 +132,18 @@ public class SearchVideoGridFragment extends VideosGridFragment {
 	public String getFragmentName() {
 		return null;
 	}
+
+	@Override
+	public void onPause() {
+		mAdView.pause();
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mAdView.resume();
+	}
+
 
 }

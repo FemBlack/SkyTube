@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.huber.youtubeExtractor.YtFile;
 import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.AsyncTaskParallel;
 import free.rm.skytube.businessobjects.Logger;
@@ -30,8 +31,12 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 	private static volatile DownloadedVideosDb downloadsDb = null;
 	private static boolean hasUpdated = false;
 
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "videodownloads.db";
+
+	public static String AUDIO = "Audio";
+	public static String VIDEO = "Video";
+	public static String UNDERSCORE = "Underscore";
 
 	private DownloadedVideosListener listener;
 
@@ -59,7 +64,9 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+		if (newVersion > oldVersion) {
+			db.execSQL(DownloadedVideosTable.getUpdateStatement());
+		}
 	}
 
 	/**
@@ -70,9 +77,9 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 	public List<YouTubeVideo> getDownloadedVideos() {
 		Cursor	cursor = getReadableDatabase().query(
 						DownloadedVideosTable.TABLE_NAME,
-						new String[]{DownloadedVideosTable.COL_YOUTUBE_VIDEO, DownloadedVideosTable.COL_FILE_URI},
+						new String[]{DownloadedVideosTable.COL_YOUTUBE_VIDEO, DownloadedVideosTable.COL_FILE_URI,DownloadedVideosTable.COL_ORDER,DownloadedVideosTable.COL_MIME},
 						null,
-						null, null, null, null);
+						null, null, null, DownloadedVideosTable.COL_ORDER +" DESC");
 		List<YouTubeVideo> videos = new ArrayList<>();
 
 		if(cursor.moveToNext()) {
@@ -81,7 +88,11 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 				final String videoJson = new String(blob);
 
 				// convert JSON into YouTubeVideo
-				YouTubeVideo video = new Gson().fromJson(videoJson, new TypeToken<YouTubeVideo>(){}.getType());
+ 				YouTubeVideo video = new Gson().fromJson(videoJson, new TypeToken<YouTubeVideo>(){}.getType());
+				String id = video.getId() + UNDERSCORE +  cursor.getString(cursor.getColumnIndex(DownloadedVideosTable.COL_MIME));
+				video.setId(id);
+
+
 
 				// due to upgrade to YouTubeVideo (by changing channel{Id,Name} to YouTubeChannel)
 				// from version 2.82 to 2.90
@@ -110,6 +121,27 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 		values.put(DownloadedVideosTable.COL_YOUTUBE_VIDEO_ID, video.getId());
 		values.put(DownloadedVideosTable.COL_YOUTUBE_VIDEO, gson.toJson(video).getBytes());
 		values.put(DownloadedVideosTable.COL_FILE_URI, fileUri);
+
+		int order = getNumDownloads();
+		order++;
+		values.put(DownloadedVideosTable.COL_ORDER, order);
+
+		boolean addSuccessful = getWritableDatabase().replace(DownloadedVideosTable.TABLE_NAME, null, values) != -1;
+		onUpdated();
+		return addSuccessful;
+	}
+
+	public boolean add(YouTubeVideo video, String fileUri, YtFile ytFile) {
+		Gson gson = new Gson();
+		String mime = (ytFile.getFormat().getHeight() == -1)  ? AUDIO  :   VIDEO;
+
+		String videoId = video.getId().contains(UNDERSCORE) ? video.getId().substring(0, video.getId().indexOf(UNDERSCORE)) : video.getId();
+
+		ContentValues values = new ContentValues();
+		values.put(DownloadedVideosTable.COL_YOUTUBE_VIDEO_ID, videoId+ UNDERSCORE + mime);
+		values.put(DownloadedVideosTable.COL_YOUTUBE_VIDEO, gson.toJson(video).getBytes());
+		values.put(DownloadedVideosTable.COL_FILE_URI, fileUri);
+		values.put(DownloadedVideosTable.COL_MIME, mime);
 
 		int order = getNumDownloads();
 		order++;
@@ -149,6 +181,25 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 		return isDownloaded;
 	}
 
+	public boolean isVideoDownloaded(YouTubeVideo video,final boolean isVideo) {
+		String mime = isVideo  ?   VIDEO : AUDIO;
+		String videoId = video.getId().contains(UNDERSCORE) ? video.getId().substring(0, video.getId().indexOf(UNDERSCORE)) : video.getId();
+		Cursor cursor = getReadableDatabase().query(
+				DownloadedVideosTable.TABLE_NAME,
+				new String[]{DownloadedVideosTable.COL_FILE_URI},
+				DownloadedVideosTable.COL_YOUTUBE_VIDEO_ID + " = ?",
+				new String[]{videoId+ UNDERSCORE + mime}, null, null, null);
+
+		boolean isDownloaded = false;
+		if (cursor.moveToNext()) {
+			String uri = cursor.getString(cursor.getColumnIndex(DownloadedVideosTable.COL_FILE_URI));
+			isDownloaded = uri != null;
+		}
+		cursor.close();
+		return isDownloaded;
+	}
+
+
 	public Uri getVideoFileUri(YouTubeVideo video) {
 		Cursor cursor = null;
 		try {
@@ -157,6 +208,29 @@ public class DownloadedVideosDb extends SQLiteOpenHelperEx implements OrderableD
 					new String[]{DownloadedVideosTable.COL_FILE_URI},
 					DownloadedVideosTable.COL_YOUTUBE_VIDEO_ID + " = ?",
 					new String[]{video.getId()}, null, null, null);
+
+			if (cursor.moveToNext()) {
+				String uri = cursor.getString(cursor.getColumnIndex(DownloadedVideosTable.COL_FILE_URI));
+				return Uri.parse(uri);
+			}
+			return null;
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+	}
+
+	public Uri getVideoFileUri(YouTubeVideo video,boolean isVideo) {
+		String mime = isVideo  ?   VIDEO : AUDIO;
+		String videoId = video.getId().contains(UNDERSCORE) ? video.getId().substring(0, video.getId().indexOf(UNDERSCORE)) : video.getId();
+		Cursor cursor = null;
+		try {
+			cursor = getReadableDatabase().query(
+					DownloadedVideosTable.TABLE_NAME,
+					new String[]{DownloadedVideosTable.COL_FILE_URI},
+					DownloadedVideosTable.COL_YOUTUBE_VIDEO_ID + " = ?",
+					new String[]{videoId+ UNDERSCORE + mime}, null, null, null);
 
 			if (cursor.moveToNext()) {
 				String uri = cursor.getString(cursor.getColumnIndex(DownloadedVideosTable.COL_FILE_URI));

@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources>
-	<string name="thumbnail">Vorschaubild</string>
-	<string name="view_thumbnail">Miniaturansicht anzeigen</string>
-	<string name="thumbnail_downloaded">Miniaturbild heruntergeladen.</string>
-	<string name="thumbnail_download_error">Die Miniaturansicht konnte nicht heruntergeladen werden.</string>
-</resources>

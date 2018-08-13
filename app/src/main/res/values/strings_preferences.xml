@@ -442,12 +442,17 @@
 	<string name="pref_title_default_tab">Default Tab</string>
 	<string name="pref_summary_default_tab">Default tab to show when SkyTube launches: %s</string>
 	<string-array name="default_tab" translatable="false">
+		<item>@string/Tamil</item>
+		<item>@string/Hindi</item>
+		<item>@string/Telugu</item>
+		<item>@string/Malayalam</item>
 		<item>@string/featured</item>
 		<item>@string/most_popular</item>
 		<item>@string/feed</item>
 		<item>@string/bookmarks</item>
 		<item>@string/downloads</item>
-		<item>@string/playlists</item>
+
+
 	</string-array>
 	<string-array name="default_tab_values" translatable="false">
 		<item>0</item>
@@ -456,6 +461,9 @@
 		<item>3</item>
 		<item>4</item>
 		<item>5</item>
+		<item>6</item>
+		<item>7</item>
+		<item>8</item>
 	</string-array>
 
 	<string name="pref_key_feed_notification" translatable="false">pref_key_feed_notification</string>

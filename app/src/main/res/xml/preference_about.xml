@@ -22,15 +22,15 @@
 		android:key="@string/pref_key_version"
 		android:title="@string/pref_title_version" />
 
-	<PreferenceScreen
+	<!--<PreferenceScreen
 		android:key="@string/pref_key_updates"
 		android:title="@string/pref_title_updates"
 		android:summary="@string/pref_summary_updates" />
-
-	<PreferenceScreen
+-->
+	<!--<PreferenceScreen
 		android:key="@string/pref_key_website"
 		android:title="@string/pref_title_website"
-		android:summary="Skytube Website goes here..." />
+		android:summary="Skytube Website goes here..." />-->
 
 	<PreferenceScreen
 		android:key="@string/pref_key_credits"

@@ -174,7 +174,7 @@ public class MainFragment extends FragmentEx {
 
 		mAdView = view.findViewById(R.id.adView);
 		AdRequest.Builder adRequest = new AdRequest.Builder();
-		adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
 		mAdView.loadAd(adRequest.build());
 
 		return view;
@@ -188,11 +188,16 @@ public class MainFragment extends FragmentEx {
 		subsDrawerToggle.syncState();
 	}
 
+	@Override
+	public void onPause() {
+		mAdView.pause();
+		super.onPause();
+	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		mAdView.resume();
 		// when the MainFragment is resumed (e.g. after Preferences is minimized), inform the
 		// current fragment that it is selected.
 		if (videoGridFragmentsList != null  &&  tabLayout != null) {

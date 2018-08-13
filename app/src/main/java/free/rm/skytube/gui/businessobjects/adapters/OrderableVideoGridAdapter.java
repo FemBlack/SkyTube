@@ -19,14 +19,12 @@ package free.rm.skytube.gui.businessobjects.adapters;
 
 import android.content.Context;
 
-import java.util.Collections;
-
 import free.rm.skytube.businessobjects.interfaces.OrderableDatabase;
 
 /**
  * Subclass of VideoGridAdapter that supports drag & drop reordering of the items in the grid.
  */
-public class OrderableVideoGridAdapter extends VideoGridAdapter implements ItemTouchHelperAdapter {
+public class OrderableVideoGridAdapter extends VideoGridAdapter {
 	private OrderableDatabase database = null;
 
 	public OrderableVideoGridAdapter(Context context, OrderableDatabase database) {
@@ -34,7 +32,7 @@ public class OrderableVideoGridAdapter extends VideoGridAdapter implements ItemT
 		this.database = database;
 	}
 
-	@Override
+	/*@Override
 	public boolean onItemMove(int fromPosition, int toPosition) {
 		if (fromPosition < toPosition) {
 			for (int i = fromPosition; i < toPosition; i++) {
@@ -51,5 +49,5 @@ public class OrderableVideoGridAdapter extends VideoGridAdapter implements ItemT
 			database.updateOrder(list);
 
 		return true;
-	}
+	}*/
 }

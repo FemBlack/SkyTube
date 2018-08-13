@@ -22,7 +22,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,12 +55,8 @@ import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeChannel;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubePlaylist;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
-import free.rm.skytube.businessobjects.db.SearchHistoryDb;
-import free.rm.skytube.businessobjects.db.SearchHistoryTable;
-import free.rm.skytube.businessobjects.interfaces.SearchHistoryClickListener;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.YouTubePlayer;
-import free.rm.skytube.gui.businessobjects.adapters.SearchHistoryCursorAdapter;
 import free.rm.skytube.gui.businessobjects.updates.UpdatesCheckerTask;
 import free.rm.skytube.gui.fragments.ChannelBrowserFragment;
 import free.rm.skytube.gui.fragments.MainFragment;
@@ -69,10 +64,13 @@ import free.rm.skytube.gui.fragments.PlaylistVideosFragment;
 import free.rm.skytube.gui.fragments.SearchVideoGridFragment;
 import free.rm.skytube.gui.fragments.VideosGridFragment;
 
+import static free.rm.skytube.app.SkyTubeApp.getContext;
+import static free.rm.skytube.app.SkyTubeApp.getStr;
+
 /**
  * Main activity (launcher).  This activity holds {@link free.rm.skytube.gui.fragments.VideosGridFragment}.
  */
-public class MainActivity extends AppCompatActivity implements MainActivityListener,Serializable {
+public class MainActivity extends AppCompatActivity implements MainActivityListener,Serializable,PermissionsActivity.PermissionsTask {
 
 	@BindView(R.id.fragment_container)
 	protected transient FrameLayout           fragmentContainer;
@@ -107,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+        displayPermissionsActivity();
 		// check for updates (one time only)
 		if (!updatesCheckerTaskRan) {
 			new UpdatesCheckerTask(this, false).executeInParallel();
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		setContentView(R.layout.activity_fragment_holder);
 		ButterKnife.bind(this);
 
-		SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder("11a17b188668469fb0412708c3d16813")
+		SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(getStr(R.string.mopub_native_ad_unit_id))
 				.build();
 		MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
 		mPersonalInfoManager = MoPub.getPersonalInformationManager();
@@ -170,6 +169,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		}*/
 	}
 
+    public void displayPermissionsActivity() {
+        Intent i = new Intent(getContext(), PermissionsActivity.class);
+        i.putExtra(PermissionsActivity.PERMISSIONS_TASK_OBJ, this);
+        startActivity(i);
+    }
+
+	@Override
+	public void onExternalStoragePermissionsGranted() {
+
+	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -218,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 			@Override
 			public boolean onQueryTextChange(final String newText) {
 				// if the user does not want to have the search string saved, then skip the below...
-				if (SkyTubeApp.getPreferenceManager().getBoolean(getString(R.string.pref_key_disable_search_history), false)
+				/*if (SkyTubeApp.getPreferenceManager().getBoolean(getString(R.string.pref_key_disable_search_history), false)
 						||  newText == null  ||  newText.length() <= 1) {
 					return false;
 				}
@@ -244,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 				} else {
 					// else just change the cursor...
 					searchHistoryCursorAdapter.changeCursor(cursor);
-				}
+				}*/
 
 				return true;
 			}
@@ -254,10 +263,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 				// hide the keyboard
 				searchView.clearFocus();
 
-				if(!SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_disable_search_history), false)) {
+				/*if(!SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_disable_search_history), false)) {
 					// Save this search string into the Search History Database (for Suggestions)
 					SearchHistoryDb.getSearchHistoryDb().insertSearchText(query);
-				}
+				}*/
 
 				displaySearchResults(query);
 

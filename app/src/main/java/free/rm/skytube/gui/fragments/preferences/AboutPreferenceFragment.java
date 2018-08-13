@@ -18,9 +18,7 @@
 package free.rm.skytube.gui.fragments.preferences;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -35,7 +33,6 @@ import java.util.Locale;
 import free.rm.skytube.BuildConfig;
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
-import free.rm.skytube.gui.businessobjects.updates.UpdatesCheckerTask;
 
 /**
  * Preference fragment for about (this app) related settings.
@@ -53,7 +50,7 @@ public class AboutPreferenceFragment extends PreferenceFragment {
 		Preference versionPref = findPreference(getString(R.string.pref_key_version));
 		versionPref.setSummary(getAppVersion());
 
-		// check for updates option
+		/*// check for updates option
 		Preference updatesPref = findPreference(getString(R.string.pref_key_updates));
 		if (BuildConfig.FLAVOR.equalsIgnoreCase("oss")) {
 			// remove the updates option if the user is running the OSS flavor...
@@ -66,9 +63,9 @@ public class AboutPreferenceFragment extends PreferenceFragment {
 					return true;
 				}
 			});
-		}
+		}*/
 
-		// if the user clicks on the website link, then open it using an external browser
+		/*// if the user clicks on the website link, then open it using an external browser
 		Preference websitePref = findPreference(getString(R.string.pref_key_website));
 		websitePref.setSummary(BuildConfig.SKYTUBE_WEBSITE);
 		websitePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -79,7 +76,7 @@ public class AboutPreferenceFragment extends PreferenceFragment {
 				startActivity(browserIntent);
 				return true;
 			}
-		});
+		});*/
 
 		// credits
 		Preference creditsPref = findPreference(getString(R.string.pref_key_credits));

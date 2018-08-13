@@ -11,12 +11,11 @@ import free.rm.skytube.businessobjects.AsyncTaskParallel;
 import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
 import free.rm.skytube.gui.businessobjects.adapters.OrderableVideoGridAdapter;
-import free.rm.skytube.gui.businessobjects.fragments.OrderableVideosGridFragment;
 
 /**
  * A fragment that holds videos downloaded by the user.
  */
-public class DownloadedVideosFragment extends OrderableVideosGridFragment implements DownloadedVideosDb.DownloadedVideosListener {
+public class DownloadedVideosFragment extends VideosGridFragment implements DownloadedVideosDb.DownloadedVideosListener {
 	@BindView(R.id.noDownloadedVideosText)
 	View noDownloadedVideosText;
 	@BindView(R.id.downloadsDisabledWarning)
@@ -58,7 +57,7 @@ public class DownloadedVideosFragment extends OrderableVideosGridFragment implem
 	 */
 	private void displayDownloadsDisabledWarning() {
 		if (downloadsDisabledWarning != null) {
-			boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), false);
+			boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), true);
 			downloadsDisabledWarning.setVisibility(SkyTubeApp.isConnectedToMobile() && !allowDownloadsOnMobile ? View.VISIBLE : View.GONE);
 		}
 	}

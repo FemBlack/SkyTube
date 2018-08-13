@@ -27,9 +27,11 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.bumptech.glide.Glide;
+import com.mopub.nativeads.MediaViewBinder;
 import com.mopub.nativeads.MoPubNativeAdPositioning;
 import com.mopub.nativeads.MoPubRecyclerAdapter;
 import com.mopub.nativeads.MoPubStaticNativeAdRenderer;
+import com.mopub.nativeads.MoPubVideoNativeAdRenderer;
 import com.mopub.nativeads.RequestParameters;
 import com.mopub.nativeads.ViewBinder;
 
@@ -40,6 +42,8 @@ import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.adapters.VideoGridAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.BaseVideosGridFragment;
+
+import static free.rm.skytube.app.SkyTubeApp.getStr;
 
 /**
  * A fragment that will hold a {@link GridView} full of YouTube videos.
@@ -113,7 +117,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment {
 		);
 
 		// Set up a renderer for a video native ad.
-		/*MoPubVideoNativeAdRenderer moPubVideoNativeAdRenderer = new MoPubVideoNativeAdRenderer(
+		MoPubVideoNativeAdRenderer moPubVideoNativeAdRenderer = new MoPubVideoNativeAdRenderer(
 				new MediaViewBinder.Builder(R.layout.video_ad_list_item)
 						.titleId(R.id.native_title)
 						.textId(R.id.native_text)
@@ -122,16 +126,16 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment {
 						.callToActionId(R.id.native_cta)
 						.privacyInformationIconImageId(R.id.native_privacy_information_icon_image)
 						.build());
-*/
+
 
 		mRecyclerAdapter.registerAdRenderer(moPubStaticNativeAdRenderer);
-		//mRecyclerAdapter.registerAdRenderer(moPubVideoNativeAdRenderer);
+		mRecyclerAdapter.registerAdRenderer(moPubVideoNativeAdRenderer);
 
 
 
 		gridView.setAdapter(mRecyclerAdapter);
 		if (mRecyclerAdapter != null) {
-			mRecyclerAdapter.loadAds("11a17b188668469fb0412708c3d16813", mRequestParameters);
+			mRecyclerAdapter.loadAds(getStr(R.string.mopub_native_ad_unit_id), mRequestParameters);
 		}
 
 		//mRecyclerAdapter.loadAds("1de632f25a504ab4ae481009a650627e");

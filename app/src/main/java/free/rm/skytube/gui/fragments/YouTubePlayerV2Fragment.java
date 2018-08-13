@@ -22,15 +22,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -59,16 +69,26 @@ import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.mopub.mobileads.MoPubView;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import at.huber.youtubeExtractor.VideoMeta;
+import at.huber.youtubeExtractor.YouTubeExtractor;
+import at.huber.youtubeExtractor.YtFile;
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.AsyncTaskParallel;
@@ -95,6 +115,8 @@ import free.rm.skytube.gui.businessobjects.adapters.CommentsAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.ImmersiveModeFragment;
 import hollowsoft.slidingdrawer.OnDrawerOpenListener;
 import hollowsoft.slidingdrawer.SlidingDrawer;
+
+import static free.rm.skytube.app.SkyTubeApp.getStr;
 
 /**
  * A fragment that holds a standalone YouTube player (version 2).
@@ -128,9 +150,18 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 								noVideoCommentsView = null;
 	private CommentsAdapter     commentsAdapter = null;
 	private ExpandableListView  commentsExpandableListView = null;
-	private AdView mAdView;
+	//private AdView mAdView;
 
 	public static final String YOUTUBE_VIDEO_OBJ = "YouTubePlayerFragment.yt_video_obj";
+	private String  dirType = null;
+	/** The title that will be displayed by the Android's download manager. */
+	private String  title = null;
+	/** The description that will be displayed by the Android's download manager. */
+	private String  description = null;
+	/** Output file name (without file extension). */
+	private String  outputFileName = null;
+	private String  outputFileExtension = null;
+	public static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
 
 
 	@Nullable
@@ -185,19 +216,19 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		renewAd();
+		//renewAd();
 	}
 
-	private void renewAd() {
+	/*private void renewAd() {
 		// Remove the ad keeping the attributes
 		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mAdView.getLayoutParams();
-		/*final boolean orientation = getContext().getResources().getBoolean(R.bool.is_landscape);
+		*//*final boolean orientation = getContext().getResources().getBoolean(R.bool.is_landscape);
 		if (orientation) {
 			lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 		} else {
 			lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
 		}
-		lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);*/
+		lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);*//*
 
 		RelativeLayout parentLayout = (RelativeLayout) mAdView.getParent();
 		parentLayout.removeView(mAdView);
@@ -206,21 +237,21 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		mAdView.destroy();
 		mAdView = new AdView(getContext());
 		mAdView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
-		mAdView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id_2));
+		mAdView.setAdUnitId(getContext().getString(R.string.banner_ad_unit_id));
 		mAdView.setId(R.id.adView);
 		mAdView.setLayoutParams(lp);
 		parentLayout.addView(mAdView);
 
 // Re-fetch add and check successful load
-		/*AdRequest adRequest = new AdRequest.Builder()
+		*//*AdRequest adRequest = new AdRequest.Builder()
 				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 				.addTestDevice(parent.getString(R.string.test_device_id))
-				.build();*/
+				.build();*//*
 
 		AdRequest.Builder adRequest = new AdRequest.Builder();
-		adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
 		mAdView.loadAd(adRequest.build());
-	}
+	}*/
 
 
 	/**
@@ -290,10 +321,10 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 				}
 			}
 		});
-		mAdView = view.findViewById(R.id.adView);
+		/*mAdView = view.findViewById(R.id.adView);
 		AdRequest.Builder adRequest = new AdRequest.Builder();
-		adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
-		mAdView.loadAd(adRequest.build());
+		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+		mAdView.loadAd(adRequest.build());*/
 	}
 
 
@@ -430,7 +461,7 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 	private void playVideo(Uri videoUri) {
 		// Check if this fragment is visible before playing the video.  It might not be visible if
 		// the user clicked on the back button (and hence cancelling this operation)...
-		if (isVisible()) {
+		if (true) {
 			DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getContext(), "ST. Agent", new DefaultBandwidthMeter());
 			ExtractorMediaSource.Factory extMediaSourceFactory = new ExtractorMediaSource.Factory(dataSourceFactory);
 			ExtractorMediaSource mediaSource = extMediaSourceFactory.createMediaSource(videoUri);
@@ -453,8 +484,8 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		// Hide the download video option if mobile downloads are not allowed and the device is connected through mobile, and the video isn't already downloaded
-		boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), false);
-		if((youTubeVideo != null && !youTubeVideo.isDownloaded()) && (SkyTubeApp.isConnectedToWiFi() || (SkyTubeApp.isConnectedToMobile() && allowDownloadsOnMobile))) {
+		boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), true);
+		if((SkyTubeApp.isConnectedToWiFi() || (SkyTubeApp.isConnectedToMobile() && allowDownloadsOnMobile))) {
 			menu.findItem(R.id.download_video).setVisible(true);
 		} else {
 			menu.findItem(R.id.download_video).setVisible(false);
@@ -512,11 +543,19 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 				return true;
 
 			case R.id.download_video:
-				youTubeVideo.downloadVideo(getContext());
+				//youTubeVideo.downloadVideo(getContext());
+				if (youTubeVideo != null) {
+					if (youTubeVideo.isDownloaded()) {
+						shareVideoWhatsApp(new File(youTubeVideo.getFileUri().getPath()));
+					} else {
+						setVariables(youTubeVideo);
+						getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId());
+					}
+				}
 				return true;
 
-			case R.id.block_channel:
-				youTubeChannel.blockChannel();
+			/*case R.id.block_channel:
+				youTubeChannel.blockChannel();*/
 
 			default:
 				return super.onOptionsItemSelected(item);
@@ -534,6 +573,279 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		hideNavigationBar();
 	}
 
+	private void showListDialog(final Map<String,YtFile> map) {
+		new MaterialDialog.Builder(getActivity())
+				.title(R.string.download_video)
+				.items(map.keySet())
+				.itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+					@Override
+					public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+						/**
+						 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+						 * returning false here won't allow the newly selected radio button to actually be selected.
+						 **/
+						new DownloadFile().execute(map.get(dialog.getItems().get(which)).getUrl(),"");
+						return true;
+					}
+				})
+				.positiveText(R.string.ok).choiceWidgetColor(ColorStateList.valueOf(getActivity().getResources().getColor(R.color.dialog_title)))
+				.show();
+	}
+	private void getYoutubeDownloadVideoList(String youtubeLink) {
+		new YouTubeExtractor(getActivity()) {
+
+			@Override
+			public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
+				Map<String,YtFile> map = new LinkedHashMap<>();
+				if (ytFiles == null) {
+					// Something went wrong we got no urls. Always check this.
+					//finish();
+					return;
+				}
+				// Iterate over itags
+				for (int i = 0, itag; i < ytFiles.size(); i++) {
+					itag = ytFiles.keyAt(i);
+					// ytFile represents one file with its url and meta data
+					YtFile ytFile = ytFiles.get(itag);
+
+					// Just add videos in a decent format => height -1 = audio
+					if (ytFile.getFormat().getHeight() == -1) {
+						String str = (ytFile.getFormat().getHeight() == -1) ? "Audio " +
+								ytFile.getFormat().getAudioBitrate() + " kbit/s" :
+								ytFile.getFormat().getHeight() + "p";
+						map.put(str,ytFile);
+					}
+					if (!ytFile.getFormat().isDashContainer() && ytFile.getFormat().getHeight() >= 360) {
+						String str = (ytFile.getFormat().getHeight() == -1) ? "Audio " +
+								ytFile.getFormat().getAudioBitrate() + " kbit/s" :
+								ytFile.getFormat().getHeight() + "p";
+						map.put(str,ytFile);
+					}
+				}
+				showListDialog(map);
+			}
+		}.extract(youtubeLink, false, false);
+	}
+
+	// DownloadFile AsyncTask
+	private class DownloadFile extends AsyncTask<String, Integer, String> {
+
+		MaterialDialog md;
+		private MoPubView mMoPubView;
+		ProgressBar progressBar;
+		private int progressStatus = 0;
+		private TextView textView;
+		private File file;
+		boolean mkdirs;
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			md = new MaterialDialog.Builder(getActivity())
+					.title(R.string.download_video)
+					.customView(R.layout.mrect_ad, true)
+					.build();
+			mMoPubView = (MoPubView) md.findViewById(R.id.banner_mopubview);
+			progressBar = (ProgressBar) md.findViewById(R.id.progressBar);
+			progressBar.setMax(100);
+			textView = (TextView) md.findViewById(R.id.textView);
+			progressStatus += 1;
+
+			RelativeLayout.LayoutParams layoutParams =
+					(RelativeLayout.LayoutParams) mMoPubView.getLayoutParams();
+			layoutParams.width = getWidth();
+			layoutParams.height = getHeight();
+			mMoPubView.setLayoutParams(layoutParams);
+			mMoPubView.setAdUnitId(getStr(R.string.mopub_native_ad_unit_id));
+			mMoPubView.loadAd();
+			md.show();
+		}
+
+		@Override
+		protected String doInBackground(String... Url) {
+			try {
+
+				// if the external storage is not available then halt the download operation
+				if (!isExternalStorageAvailable()) {
+					onExternalStorageNotAvailable();
+					return "";
+				}
+
+
+				Uri     remoteFileUri = Uri.parse(Url[0]);
+				String  downloadFileName = getCompleteFileName(outputFileName, remoteFileUri);
+
+				// if there's already a local file for this video for some reason, then do not redownload the
+				// file and halt
+				file = new File(Environment.getExternalStoragePublicDirectory(dirType), downloadFileName);
+				/*if (file.exists()) {
+					onFileDownloadCompleted(true, file);
+					return "";
+				}*/
+
+				URL url = new URL(Url[0]);
+				URLConnection connection = url.openConnection();
+				connection.connect();
+
+				// Detect the file lenghth
+				int fileLength = connection.getContentLength();
+
+
+				// Download the file
+				InputStream input = new BufferedInputStream(url.openStream());
+				String filepath = Environment.getExternalStoragePublicDirectory(dirType).getPath();
+
+				File myDir = new File(filepath);
+				if (!myDir.exists()) {
+					mkdirs = myDir.mkdirs();
+				}
+
+
+				File f = new File(filepath, downloadFileName);
+
+				// Save the downloaded file
+				OutputStream output = new FileOutputStream(f);
+
+				byte data[] = new byte[1024];
+				long total = 0;
+				int count;
+				while ((count = input.read(data)) != -1) {
+					total += count;
+					// Publish the progress
+					publishProgress((int) (total * 100 / fileLength));
+					output.write(data, 0, count);
+				}
+
+				// Close connection
+				output.flush();
+				output.close();
+				input.close();
+			} catch (final Exception e) {
+				// Error Log
+				Log.e("Error", e.getMessage());
+				e.printStackTrace();
+				new Handler(Looper.getMainLooper()).post(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(getContext(),mkdirs + ">>>>>>>>>>>>>"+ e.getMessage(),
+								Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+			super.onProgressUpdate(progress);
+
+			progressBar.setProgress(progress[0]);
+			textView.setText(progress[0]+"/"+progressBar.getMax());
+			if(isAdded()) {
+				textView.setTextColor(getResources().getColor(R.color.skytube_theme_colour));
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String file_url) {
+			//md.dismiss();
+			onFileDownloadCompleted(true, file);
+		}
+	}
+
+	public int getWidth() {
+		return (int) getResources().getDimension(R.dimen.mrect_width);
+	}
+
+	public int getHeight() {
+		return (int) getResources().getDimension(R.dimen.mrect_height);
+	}
+
+	private void setVariables(YouTubeVideo youTubeVideo) {
+		dirType = Environment.DIRECTORY_MOVIES;
+		title = youTubeVideo.getTitle();
+		description = getStr(R.string.video) + " ― " + youTubeVideo.getChannelName();
+		outputFileName = youTubeVideo.getId();
+		outputFileExtension = "mp4";
+		this.youTubeVideo = youTubeVideo;
+	}
+
+	private String getCompleteFileName(String outputFileName, Uri remoteFileUri) {
+		String fileExt = (outputFileExtension != null)  ?  outputFileExtension  :   MimeTypeMap.getFileExtensionFromUrl(remoteFileUri.toString());
+		return outputFileName + "." + fileExt;
+	}
+
+	public void onFileDownloadStarted() {
+		Toast.makeText(getContext(),
+				String.format(getContext().getString(R.string.starting_video_download), youTubeVideo.getTitle()),
+				Toast.LENGTH_LONG).show();
+	}
+
+	public void onFileDownloadCompleted(boolean success, File localFile) {
+		if (success) {
+			success = DownloadedVideosDb.getVideoDownloadsDb().add(youTubeVideo, localFile.toURI().toString());
+		}
+
+		/*Toast.makeText(getContext(),
+				String.format(getContext().getString(success ? R.string.video_downloaded : R.string.video_download_stream_error), youTubeVideo.getTitle()),
+				Toast.LENGTH_LONG).show();*/
+
+		shareVideoWhatsApp(localFile);
+	}
+
+	public void onExternalStorageNotAvailable() {
+		Toast.makeText(getContext(),
+				R.string.external_storage_not_available,
+				Toast.LENGTH_LONG).show();
+	}
+
+
+	private void shareVideoWhatsApp(File file) {
+
+		if(!appInstalledOrNot("com.whatsapp")){
+			Toast.makeText(getContext(),
+					R.string.whatsapp_install,
+					Toast.LENGTH_LONG).show();
+		}else{
+			Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
+					? FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext().getPackageName() + ".provider", file)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+					: Uri.fromFile(file);
+
+			Intent videoshare = new Intent(Intent.ACTION_SEND);
+			videoshare.setType("*/*");
+			videoshare.setPackage("com.whatsapp");
+			videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			videoshare.putExtra(Intent.EXTRA_STREAM,uri);
+
+			startActivity(videoshare);
+		}
+
+
+
+	}
+
+	private boolean appInstalledOrNot(String uri) {
+		PackageManager pm = getActivity().getPackageManager();
+		boolean app_installed;
+		try {
+			pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+			app_installed = true;
+		}
+		catch (PackageManager.NameNotFoundException e) {
+			app_installed = false;
+		}
+		return app_installed;
+	}
+
+	/**
+	 * Checks if the external storage is available for read and write.
+	 *
+	 * @return True if the external storage is available.
+	 */
+	private boolean isExternalStorageAvailable() {
+		String state = Environment.getExternalStorageState();
+		return Environment.MEDIA_MOUNTED.equals(state);
+	}
 
 	/**
 	 * Will asynchronously retrieve additional video information such as channel avatar ...etc
@@ -1051,4 +1363,15 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 
 	}
 
+	/*@Override
+	public void onPause() {
+		mAdView.pause();
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mAdView.resume();
+	}*/
 }

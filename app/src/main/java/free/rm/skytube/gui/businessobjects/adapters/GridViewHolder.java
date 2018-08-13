@@ -17,13 +17,16 @@
 
 package free.rm.skytube.gui.businessobjects.adapters;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,14 +36,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.kucherenkoihor.vpl.VideoProcessing;
 import com.mopub.mobileads.MoPubView;
 
 import java.io.BufferedInputStream;
@@ -48,9 +52,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import at.huber.youtubeExtractor.VideoMeta;
@@ -58,6 +65,7 @@ import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
+import free.rm.skytube.businessobjects.FileDownloader;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
 import free.rm.skytube.businessobjects.db.PlaybackStatusDb;
@@ -69,6 +77,9 @@ import free.rm.skytube.gui.businessobjects.YouTubePlayer;
 
 import static free.rm.skytube.app.SkyTubeApp.getContext;
 import static free.rm.skytube.app.SkyTubeApp.getStr;
+import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.AUDIO;
+import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.UNDERSCORE;
+import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.VIDEO;
 
 /**
  * A ViewHolder for the videos grid view.
@@ -99,6 +110,7 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 	/** Output file name (without file extension). */
 	private String  outputFileName = null;
 	private String  outputFileExtension = null;
+	private YtFile youtubeFile = null;
 	public static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
 
 
@@ -236,10 +248,10 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 
 		if(youTubeVideo.isDownloaded()) {
 			popupMenu.getMenu().findItem(R.id.delete_download).setVisible(true);
-			popupMenu.getMenu().findItem(R.id.download_video).setVisible(false);
+			popupMenu.getMenu().findItem(R.id.download_video).setVisible(true);
 		} else {
 			popupMenu.getMenu().findItem(R.id.delete_download).setVisible(false);
-			boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), false);
+			boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), true);
 			if(SkyTubeApp.isConnectedToWiFi() || (SkyTubeApp.isConnectedToMobile() && allowDownloadsOnMobile))
 				popupMenu.getMenu().findItem(R.id.download_video).setVisible(true);
 			else
@@ -282,12 +294,29 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 						youTubeVideo.removeDownload();
 						return true;
 					case R.id.download_video:
-						setVariables(youTubeVideo);
-						getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId());
-						//showDialog();
+						if (youTubeVideo != null) {
+							if (youTubeVideo.isDownloaded(true)) {
+								shareVideoWhatsApp(new File(youTubeVideo.getFileUri(true).getPath()));
+							} else {
+								setVariables(youTubeVideo);
+								getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId(),true);
+							}
+						}
+
 						return true;
-					case R.id.block_channel:
-						youTubeVideo.getChannel().blockChannel();
+					case R.id.download_audio:
+						if (youTubeVideo != null) {
+							if (youTubeVideo.isDownloaded(false)) {
+								shareVideoWhatsApp(new File(youTubeVideo.getFileUri(false).getPath()));
+							} else {
+								setVariables(youTubeVideo);
+								getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId(),false);
+							}
+						}
+
+						return true;
+					/*case R.id.block_channel:
+						youTubeVideo.getChannel().blockChannel();*/
 				}
 				return false;
 			}
@@ -310,21 +339,21 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 
 	private MoPubView mMoPubView;
 
-	private void showDialog() {
+	/*private void showDialog() {
 		MaterialDialog md = new MaterialDialog.Builder(context)
 				.title(R.string.download_video)
 				.customView(R.layout.mrect_ad, true)
 				.build();
 		mMoPubView = (MoPubView) md.findViewById(R.id.banner_mopubview);
-		LinearLayout.LayoutParams layoutParams =
-				(LinearLayout.LayoutParams) mMoPubView.getLayoutParams();
+		RelativeLayout.LayoutParams layoutParams =
+				(RelativeLayout.LayoutParams) mMoPubView.getLayoutParams();
 		layoutParams.width = getWidth();
 		layoutParams.height = getHeight();
 		mMoPubView.setLayoutParams(layoutParams);
 		mMoPubView.setAdUnitId("252412d5e9364a05ab77d9396346d73d");
 		mMoPubView.loadAd();
 		md.show();
-	}
+	}*/
 
 	public int getWidth() {
 		return (int) context.getResources().getDimension(R.dimen.mrect_width);
@@ -338,26 +367,29 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 		new MaterialDialog.Builder(context)
 				.title(R.string.download_video)
 				.items(map.keySet())
-				.itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+				.itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
 					@Override
 					public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 						/**
 						 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
 						 * returning false here won't allow the newly selected radio button to actually be selected.
 						 **/
-						new DownloadFile().execute(map.get(dialog.getItems().get(which)).getUrl(),"");
+						youtubeFile = map.get(dialog.getItems().get(which));
+						new DownloadFile().execute(youtubeFile);
+
 						return true;
 					}
 				})
 				.positiveText(R.string.ok).choiceWidgetColor(ColorStateList.valueOf(context.getResources().getColor(R.color.dialog_title)))
 				.show();
 	}
-	private void getYoutubeDownloadVideoList(String youtubeLink) {
+	private void getYoutubeDownloadVideoList(String youtubeLink,final boolean isVideo) {
 		new YouTubeExtractor(context) {
 
 			@Override
 			public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
-				Map<String,YtFile> map = new HashMap<>();
+				Map<String,YtFile> map = new LinkedHashMap<>();
+				List<YtFile> list = new ArrayList<>();
 				if (ytFiles == null) {
 					// Something went wrong we got no urls. Always check this.
 					//finish();
@@ -366,31 +398,50 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 				// Iterate over itags
 				for (int i = 0, itag; i < ytFiles.size(); i++) {
 					itag = ytFiles.keyAt(i);
-					// ytFile represents one file with its url and meta data
+					// youtubeFile represents one file with its url and meta data
 					YtFile ytFile = ytFiles.get(itag);
 
 					// Just add videos in a decent format => height -1 = audio
-					if (ytFile.getFormat().getHeight() == -1 || ytFile.getFormat().getHeight() >= 360) {
+					if (ytFile.getFormat().getHeight() == -1 && !isVideo) {
 						String str = (ytFile.getFormat().getHeight() == -1) ? "Audio " +
 								ytFile.getFormat().getAudioBitrate() + " kbit/s" :
 								ytFile.getFormat().getHeight() + "p";
-						str += (ytFile.getFormat().isDashContainer()) ? " dash" : "";
+						list.add(ytFile);
+					}
+					if (!ytFile.getFormat().isDashContainer() && ytFile.getFormat().getHeight() >= 360 && isVideo) {
+						String str = (ytFile.getFormat().getHeight() == -1) ? "Audio " +
+								ytFile.getFormat().getAudioBitrate() + " kbit/s" :
+								ytFile.getFormat().getHeight() + "p";
 						map.put(str,ytFile);
 					}
 				}
-				showListDialog(map);
+				if (isVideo) {
+					showListDialog(map);
+				} else {
+					if (list.size() >= 1) {
+						youtubeFile = list.get(0);
+						new DownloadFile().execute(youtubeFile);
+					} else {
+						Toast.makeText(getContext(),
+								R.string.error_download_audio,
+								Toast.LENGTH_LONG).show();
+					}
+				}
+
 			}
-		}.extract(youtubeLink, true, false);
+		}.extract(youtubeLink, false, false);
 	}
 
 	// DownloadFile AsyncTask
-	private class DownloadFile extends AsyncTask<String, Integer, String> {
+	private class DownloadFile extends AsyncTask<YtFile, Integer, String> {
 
 		MaterialDialog md;
 		private MoPubView mMoPubView;
 		ProgressBar progressBar;
 		private int progressStatus = 0;
 		private TextView textView;
+		private File file;
+		boolean mkdirs;
 
 		@Override
 		protected void onPreExecute() {
@@ -405,31 +456,38 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 			textView = (TextView) md.findViewById(R.id.textView);
 			progressStatus += 1;
 
-			LinearLayout.LayoutParams layoutParams =
-					(LinearLayout.LayoutParams) mMoPubView.getLayoutParams();
+			RelativeLayout.LayoutParams layoutParams =
+					(RelativeLayout.LayoutParams) mMoPubView.getLayoutParams();
 			layoutParams.width = getWidth();
 			layoutParams.height = getHeight();
 			mMoPubView.setLayoutParams(layoutParams);
-			mMoPubView.setAdUnitId("252412d5e9364a05ab77d9396346d73d");
+			mMoPubView.setAdUnitId(getStr(R.string.mopub_native_ad_unit_id));
 			mMoPubView.loadAd();
 			md.show();
 		}
 
 		@Override
-		protected String doInBackground(String... Url) {
+		protected String doInBackground(YtFile... ytFiles) {
 			try {
-				Uri     remoteFileUri = Uri.parse(Url[0]);
+
+				// if the external storage is not available then halt the download operation
+				if (!isExternalStorageAvailable()) {
+					onExternalStorageNotAvailable();
+					return "";
+				}
+
+				Uri     remoteFileUri = Uri.parse(youtubeFile.getUrl());
 				String  downloadFileName = getCompleteFileName(outputFileName, remoteFileUri);
 
 				// if there's already a local file for this video for some reason, then do not redownload the
 				// file and halt
-				File file = new File(Environment.getExternalStoragePublicDirectory(dirType), downloadFileName);
-				if (file.exists()) {
-					onFileDownloadCompleted(true, Uri.parse(file.toURI().toString()));
+				file = new File(Environment.getExternalStoragePublicDirectory(dirType), downloadFileName);
+				/*if (file.exists()) {
+					onFileDownloadCompleted(true, file);
 					return "";
-				}
+				}*/
 
-				URL url = new URL(Url[0]);
+				URL url = new URL(youtubeFile.getUrl());
 				URLConnection connection = url.openConnection();
 				connection.connect();
 
@@ -440,6 +498,13 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 				// Download the file
 				InputStream input = new BufferedInputStream(url.openStream());
 				String filepath = Environment.getExternalStoragePublicDirectory(dirType).getPath();
+
+				File myDir = new File(filepath);
+				if (!myDir.exists()) {
+					mkdirs = myDir.mkdirs();
+				}
+
+
 
 				File f = new File(filepath, downloadFileName);
 
@@ -460,10 +525,18 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 				output.flush();
 				output.close();
 				input.close();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// Error Log
 				Log.e("Error", e.getMessage());
 				e.printStackTrace();
+
+				new Handler(Looper.getMainLooper()).post(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(getContext(),mkdirs + ">>>>>>>>>>>>>"+ e.getMessage(),
+								Toast.LENGTH_LONG).show();
+					}
+				});
 			}
 			return null;
 		}
@@ -474,13 +547,85 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 
 			progressBar.setProgress(progress[0]);
 			textView.setText(progress[0]+"/"+progressBar.getMax());
+			textView.setTextColor(context.getResources().getColor(R.color.skytube_theme_colour));
 
 		}
 
 		@Override
 		protected void onPostExecute(String file_url) {
-			md.dismiss();
+			//md.dismiss();
+
+			if (youtubeFile.getFormat().getHeight() == -1) {
+				textView.setText(R.string.thumbnail_downloaded);
+				downloadThumbnailImage(file);
+			}else {
+				onFileDownloadCompleted(true, file);
+			}
 		}
+	}
+
+	private String getThumbnailUrl() {
+		return youTubeVideo.getThumbnailMaxResUrl() != null  ?  youTubeVideo.getThumbnailMaxResUrl()  :  youTubeVideo.getThumbnailUrl();
+	}
+
+
+	/**
+	 * Downloads a video thumbnail.
+	 */
+	private static class ThumbnailDownloader extends FileDownloader implements Serializable {
+
+		private String  audioPath = null;
+
+		public ThumbnailDownloader(String localAudioPath) {
+			super();
+			audioPath = localAudioPath;
+		}
+
+		@Override
+		public void onFileDownloadStarted() {
+		}
+
+		@Override
+		public void onFileDownloadCompleted(boolean success, Uri localFileUri) {
+			Toast.makeText(getContext(),
+					success  ?  R.string.thumbnail_downloaded  :  R.string.thumbnail_download_error,
+					Toast.LENGTH_LONG)
+					.show();
+			if (success) {
+				processAudioAndImage(localFileUri.toString(),audioPath,localFileUri.toString());
+			}
+		}
+
+		@Override
+		public void onExternalStorageNotAvailable() {
+			Toast.makeText(getContext(),
+					R.string.external_storage_not_available,
+					Toast.LENGTH_LONG).show();
+		}
+
+	}
+
+	private void downloadThumbnailImage(File localAudioPath) {
+		// download the thumbnail
+		new ThumbnailDownloader(localAudioPath.toURI().toString())
+				.setRemoteFileUrl(getThumbnailUrl())
+				.setDirType(Environment.DIRECTORY_PICTURES)
+				.setTitle(youTubeVideo.getTitle())
+				.setDescription((R.string.thumbnail) + " ― " + youTubeVideo.getChannelName())
+				.setOutputFileName(youTubeVideo.getId())
+				.setAllowedOverRoaming(true)
+				.displayPermissionsActivity(getContext());
+	}
+
+	private static void processAudioAndImage(String selectedPathVideo, String selectedPathAudio, String output) {
+		VideoProcessing mVideoProcessing = new VideoProcessing();
+		try {
+			mVideoProcessing.mergeAudioWithVideoWithoutTranscoding(selectedPathVideo, selectedPathAudio, output);
+		} catch (Exception e) {
+			Log.e("Error", e.getMessage());
+			e.printStackTrace();
+		}
+
 	}
 
 	private void setVariables(YouTubeVideo youTubeVideo) {
@@ -494,7 +639,8 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 
 	private String getCompleteFileName(String outputFileName, Uri remoteFileUri) {
 		String fileExt = (outputFileExtension != null)  ?  outputFileExtension  :   MimeTypeMap.getFileExtensionFromUrl(remoteFileUri.toString());
-		return outputFileName + "." + fileExt;
+		String mime = (youtubeFile.getFormat().getHeight() == -1)  ? AUDIO  :   VIDEO;
+		return outputFileName +UNDERSCORE+mime+ "." + fileExt;
 	}
 
 	public void onFileDownloadStarted() {
@@ -503,14 +649,16 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 				Toast.LENGTH_LONG).show();
 	}
 
-	public void onFileDownloadCompleted(boolean success, Uri localFileUri) {
+	public void onFileDownloadCompleted(boolean success, File localFile) {
 		if (success) {
-			success = DownloadedVideosDb.getVideoDownloadsDb().add(youTubeVideo, localFileUri.toString());
+			success = DownloadedVideosDb.getVideoDownloadsDb().add(youTubeVideo, localFile.toURI().toString(), youtubeFile);
 		}
 
-		Toast.makeText(getContext(),
+	/*	Toast.makeText(getContext(),
 				String.format(getContext().getString(success ? R.string.video_downloaded : R.string.video_download_stream_error), youTubeVideo.getTitle()),
-				Toast.LENGTH_LONG).show();
+				Toast.LENGTH_LONG).show();*/
+
+		shareVideoWhatsApp(localFile);
 	}
 
 	public void onExternalStorageNotAvailable() {
@@ -519,4 +667,50 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 				Toast.LENGTH_LONG).show();
 	}
 
+	private void shareVideoWhatsApp(File file) {
+
+		if(!appInstalledOrNot("com.whatsapp")){
+			Toast.makeText(getContext(),
+					R.string.whatsapp_install,
+					Toast.LENGTH_LONG).show();
+		}else{
+			Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
+					? FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+					: Uri.fromFile(file);
+
+			Intent videoshare = new Intent(Intent.ACTION_SEND);
+			videoshare.setType("*/*");
+			videoshare.setPackage("com.whatsapp");
+			videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			videoshare.putExtra(Intent.EXTRA_STREAM,uri);
+
+			context.startActivity(videoshare);
+		}
+
+
+
+	}
+
+	private boolean appInstalledOrNot(String uri) {
+		PackageManager pm = context.getPackageManager();
+		boolean app_installed;
+		try {
+			pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+			app_installed = true;
+		}
+		catch (PackageManager.NameNotFoundException e) {
+			app_installed = false;
+		}
+		return app_installed;
+	}
+
+	/**
+	 * Checks if the external storage is available for read and write.
+	 *
+	 * @return True if the external storage is available.
+	 */
+	private boolean isExternalStorageAvailable() {
+		String state = Environment.getExternalStorageState();
+		return Environment.MEDIA_MOUNTED.equals(state);
+	}
 }

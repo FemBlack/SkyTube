@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimary">#000000</color>
-	<color name="colorPrimaryDark">#000000</color>
+	<color name="colorPrimary">#202020</color>
+	<color name="colorPrimaryDark">#202020</color>
 	<color name="colorAccent">#d32828</color>
 
 	<color name="skytube_theme_colour">#d32828</color>
@@ -22,7 +22,7 @@
 	<!--
 		Subs Drawer Colours
 	-->
-	<color name="subs_drawer_background">#000000</color>
+	<color name="subs_drawer_background">#202020</color>
 	<drawable name="sub_channel_pressed">@color/skytube_theme_colour</drawable>
 	<drawable name="sub_channel">@android:color/transparent</drawable>
 	<color name="subs_text">#FFF</color>

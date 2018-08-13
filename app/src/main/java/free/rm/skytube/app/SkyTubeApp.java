@@ -42,9 +42,11 @@ import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.MobileAds;
 import com.klinker.android.link_builder.Link;
 import com.klinker.android.link_builder.LinkBuilder;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -67,10 +69,10 @@ import free.rm.skytube.gui.fragments.PlaylistVideosFragment;
 /**
  * SkyTube application.
  */
-public class SkyTubeApp extends MultiDexApplication {
+public class SkyTubeApp extends MultiDexApplication implements Serializable{
 
 	/** SkyTube Application databaseInstance. */
-	private static SkyTubeApp skyTubeApp = null;
+	private static transient SkyTubeApp skyTubeApp = null;
 
 	public static final String KEY_SUBSCRIPTIONS_LAST_UPDATED = "SkyTubeApp.KEY_SUBSCRIPTIONS_LAST_UPDATED";
 	public static final String NEW_VIDEOS_NOTIFICATION_CHANNEL = "free.rm.skytube.NEW_VIDEOS_NOTIFICATION_CHANNEL";
@@ -81,6 +83,7 @@ public class SkyTubeApp extends MultiDexApplication {
 	public void onCreate() {
 		super.onCreate();
 		skyTubeApp = this;
+		MobileAds.initialize(this, "ca-app-pub-8390577583063150~4636031628");
 		initChannels(this);
 	}
 

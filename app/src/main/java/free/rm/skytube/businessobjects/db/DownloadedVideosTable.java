@@ -9,6 +9,7 @@ public class DownloadedVideosTable {
 	public static final String COL_YOUTUBE_VIDEO = "YouTube_Video";
 	public static final String COL_FILE_URI = "File_URI";
 	public static final String COL_ORDER = "Order_Index";
+	public static final String COL_MIME = "YouTube_mime";
 
 
 	public static String getCreateStatement() {
@@ -16,8 +17,13 @@ public class DownloadedVideosTable {
 						COL_YOUTUBE_VIDEO_ID + " TEXT PRIMARY KEY NOT NULL, " +
 						COL_YOUTUBE_VIDEO + " BLOB, " +
 						COL_FILE_URI + " TEXT, " +
+						COL_MIME + " TEXT, " +
 						COL_ORDER + " INTEGER " +
 						" )";
 	}
 
-}
+	public static String getUpdateStatement() {
+		return "ALTER TABLE " + TABLE_NAME + " ADD COLUMN "+ COL_MIME + " TEXT";
+	}
+
+	}

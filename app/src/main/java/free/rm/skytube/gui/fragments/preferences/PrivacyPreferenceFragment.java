@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.db.PlaybackStatusDb;
-import free.rm.skytube.businessobjects.db.SearchHistoryDb;
 
 public class PrivacyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 	@Override
@@ -43,14 +42,16 @@ public class PrivacyPreferenceFragment extends PreferenceFragment implements Sha
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(getString(R.string.pref_key_disable_search_history))) {
+/*		if (key.equals(getString(R.string.pref_key_disable_search_history))) {
 			CheckBoxPreference disableSearchHistoryPreference = (CheckBoxPreference)findPreference(key);
 			// If Search History is disabled, clear the Search History database.
 			if(disableSearchHistoryPreference.isChecked()) {
 				SearchHistoryDb.getSearchHistoryDb().deleteAllSearchHistory();
 				Toast.makeText(getActivity(), getString(R.string.pref_disable_search_history_deleted), Toast.LENGTH_LONG).show();
 			}
-		} else if (key.equals(getString(R.string.pref_key_disable_playback_status))) {
+		} else */
+
+			if (key.equals(getString(R.string.pref_key_disable_playback_status))) {
 			CheckBoxPreference disablePlaybackStatusPreference = (CheckBoxPreference)findPreference(key);
 			if(disablePlaybackStatusPreference.isChecked()) {
 				PlaybackStatusDb.getVideoDownloadsDb().deleteAllPlaybackHistory();

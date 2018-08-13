@@ -686,7 +686,7 @@ public class YouTubePlayerFragment extends ImmersiveModeFragment implements Medi
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		// Hide the download video option if mobile downloads are not allowed and the device is connected through mobile, and the video isn't already downloaded
-		boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), false);
+		boolean allowDownloadsOnMobile = SkyTubeApp.getPreferenceManager().getBoolean(SkyTubeApp.getStr(R.string.pref_key_allow_mobile_downloads), true);
 		if((youTubeVideo != null && !youTubeVideo.isDownloaded()) && (SkyTubeApp.isConnectedToWiFi() || (SkyTubeApp.isConnectedToMobile() && allowDownloadsOnMobile))) {
 			menu.findItem(R.id.download_video).setVisible(true);
 		} else {
@@ -747,8 +747,8 @@ public class YouTubePlayerFragment extends ImmersiveModeFragment implements Medi
 				youTubeVideo.downloadVideo(getContext());
 				return true;
 
-            case R.id.block_channel:
-	            youTubeChannel.blockChannel();
+            /*case R.id.block_channel:
+	            youTubeChannel.blockChannel();*/
 
 			default:
 				return super.onOptionsItemSelected(item);
