@@ -409,10 +409,10 @@ public class YouTubeVideo implements Serializable {
 				successBookmark ? R.string.video_bookmarked : R.string.video_bookmarked_error,
 				Toast.LENGTH_LONG).show();
 
-		if (successBookmark) {
+	/*	if (successBookmark) {
 			menu.findItem(R.id.bookmark_video).setVisible(false);
 			menu.findItem(R.id.unbookmark_video).setVisible(true);
-		}
+		}*/
 	}
 
 	public void unbookmarkVideo(Context context, Menu menu) {
@@ -421,10 +421,10 @@ public class YouTubeVideo implements Serializable {
 				successUnbookmark ? R.string.video_unbookmarked : R.string.video_unbookmarked_error,
 				Toast.LENGTH_LONG).show();
 
-		if (successUnbookmark) {
+		/*if (successUnbookmark) {
 			menu.findItem(R.id.bookmark_video).setVisible(true);
 			menu.findItem(R.id.unbookmark_video).setVisible(false);
-		}
+		}*/
 	}
 
 	public void shareVideo(Context context) {

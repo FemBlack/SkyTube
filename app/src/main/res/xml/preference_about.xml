@@ -42,4 +42,9 @@
 		android:title="@string/pref_title_license"
 		android:summary="@string/pref_summary_license" />
 
+	<PreferenceScreen
+	android:key="@string/pref_key_allapps"
+	android:title="@string/all_my_apps_title"
+	android:summary="@string/all_my_apps_summary" />
+
 </PreferenceScreen>

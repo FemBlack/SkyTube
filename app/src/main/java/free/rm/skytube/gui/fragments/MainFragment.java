@@ -29,7 +29,6 @@ import java.util.List;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.Logger;
-import free.rm.skytube.businessobjects.db.BookmarksDb;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.adapters.SubsAdapter;
@@ -84,7 +83,7 @@ public class MainFragment extends FragmentEx {
 			featuredVideosFragment = (FeaturedVideosFragment) getChildFragmentManager().getFragment(savedInstanceState, FEATURED_VIDEOS_FRAGMENT);
 			mostPopularVideosFragment = (MostPopularVideosFragment) getChildFragmentManager().getFragment(savedInstanceState, MOST_POPULAR_VIDEOS_FRAGMENT);
 			subscriptionsFeedFragment = (SubscriptionsFeedFragment)getChildFragmentManager().getFragment(savedInstanceState, SUBSCRIPTIONS_FEED_FRAGMENT);
-			bookmarksFragment = (BookmarksFragment) getChildFragmentManager().getFragment(savedInstanceState, BOOKMARKS_FRAGMENT);
+			//bookmarksFragment = (BookmarksFragment) getChildFragmentManager().getFragment(savedInstanceState, BOOKMARKS_FRAGMENT);
 			downloadedVideosFragment = (DownloadedVideosFragment) getChildFragmentManager().getFragment(savedInstanceState, DOWNLOADED_VIDEOS_FRAGMENT);
 			teluguVideosFragment = (TeluguVideosFragment) getChildFragmentManager().getFragment(savedInstanceState, TELUGU_PLAYLIST_VIDEOS_FRAGMENT);
 			malayalamVideosFragment = (MalayalamVideosFragment) getChildFragmentManager().getFragment(savedInstanceState, MALAYALAM_PLAYLIST_VIDEOS_FRAGMENT);
@@ -263,10 +262,10 @@ public class MainFragment extends FragmentEx {
 			if (subscriptionsFeedFragment == null)
 				subscriptionsFeedFragment = new SubscriptionsFeedFragment();
 
-			if (bookmarksFragment == null) {
+			/*if (bookmarksFragment == null) {
 				bookmarksFragment = new BookmarksFragment();
 				BookmarksDb.getBookmarksDb().addListener(bookmarksFragment);
-			}
+			}*/
 
 			if(downloadedVideosFragment == null) {
 				downloadedVideosFragment = new DownloadedVideosFragment();
@@ -282,7 +281,7 @@ public class MainFragment extends FragmentEx {
 			videoGridFragmentsList.add(featuredVideosFragment);
 			videoGridFragmentsList.add(mostPopularVideosFragment);
 			videoGridFragmentsList.add(subscriptionsFeedFragment);
-			videoGridFragmentsList.add(bookmarksFragment);
+			//videoGridFragmentsList.add(bookmarksFragment);
 			videoGridFragmentsList.add(downloadedVideosFragment);
 		}
 
@@ -311,8 +310,8 @@ public class MainFragment extends FragmentEx {
 			getChildFragmentManager().putFragment(outState, MOST_POPULAR_VIDEOS_FRAGMENT, mostPopularVideosFragment);
 		if(subscriptionsFeedFragment != null && subscriptionsFeedFragment.isAdded())
 			getChildFragmentManager().putFragment(outState, SUBSCRIPTIONS_FEED_FRAGMENT, subscriptionsFeedFragment);
-		if(bookmarksFragment != null && bookmarksFragment.isAdded())
-			getChildFragmentManager().putFragment(outState, BOOKMARKS_FRAGMENT, bookmarksFragment);
+		/*if(bookmarksFragment != null && bookmarksFragment.isAdded())
+			getChildFragmentManager().putFragment(outState, BOOKMARKS_FRAGMENT, bookmarksFragment);*/
 		if(downloadedVideosFragment != null && downloadedVideosFragment.isAdded())
 			getChildFragmentManager().putFragment(outState, DOWNLOADED_VIDEOS_FRAGMENT, downloadedVideosFragment);
 		if(teluguVideosFragment != null && teluguVideosFragment.isAdded())

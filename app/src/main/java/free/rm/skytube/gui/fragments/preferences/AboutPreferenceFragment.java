@@ -18,7 +18,9 @@
 package free.rm.skytube.gui.fragments.preferences;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -94,6 +96,16 @@ public class AboutPreferenceFragment extends PreferenceFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				displayAppLicense();
+				return true;
+			}
+		});
+
+		Preference allAppsPref = findPreference(getString(R.string.pref_key_allapps));
+		allAppsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_google_play_apps)));
+				startActivity(intent);
 				return true;
 			}
 		});

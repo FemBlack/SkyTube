@@ -1,0 +1,16 @@
+{
+  "buildFiles": [
+    "D:\\Work\\Android\\Workspace\\youtube2whatsapp\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "D:\\Work\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Work\\Android\\Workspace\\youtube2whatsapp\\app\\.externalNativeBuild\\cmake\\ossFullAPkRelease\\x86_64 --target clean"
+  ],
+  "libraries": {
+    "hello-jni-Release-x86_64": {
+      "artifactName": "hello-jni",
+      "buildCommand": "D:\\Work\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Work\\Android\\Workspace\\youtube2whatsapp\\app\\.externalNativeBuild\\cmake\\ossFullAPkRelease\\x86_64 --target hello-jni",
+      "abi": "x86_64",
+      "output": "D:\\Work\\Android\\Workspace\\youtube2whatsapp\\app\\build\\intermediates\\cmake\\ossFullAPk\\release\\obj\\x86_64\\libhello-jni.so"
+    }
+  }
+}

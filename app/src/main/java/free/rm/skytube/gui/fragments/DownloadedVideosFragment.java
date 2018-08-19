@@ -41,10 +41,10 @@ public class DownloadedVideosFragment extends VideosGridFragment implements Down
 	public void onFragmentSelected() {
 		super.onFragmentSelected();
 
-		populateList();
-//		if (DownloadedVideosDb.getVideoDownloadsDb().isHasUpdated()) {
-//			DownloadedVideosDb.getVideoDownloadsDb().setHasUpdated(false);
-//		}
+		if (DownloadedVideosDb.getVideoDownloadsDb().isHasUpdated()) {
+			populateList();
+			DownloadedVideosDb.getVideoDownloadsDb().setHasUpdated(false);
+		}
 
 		displayDownloadsDisabledWarning();
 	}

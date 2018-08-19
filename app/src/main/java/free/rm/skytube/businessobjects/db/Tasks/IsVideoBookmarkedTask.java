@@ -19,7 +19,6 @@ package free.rm.skytube.businessobjects.db.Tasks;
 
 import android.view.Menu;
 
-import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.AsyncTaskParallel;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.db.BookmarksDb;
@@ -46,7 +45,7 @@ public class IsVideoBookmarkedTask extends AsyncTaskParallel<Void, Void, Boolean
 	@Override
 	protected void onPostExecute(Boolean videoIsBookmarked) {
 		// if this video has been bookmarked, hide the bookmark option and show the unbookmark option.
-		menu.findItem(R.id.bookmark_video).setVisible(!videoIsBookmarked);
-		menu.findItem(R.id.unbookmark_video).setVisible(videoIsBookmarked);
+		/*menu.findItem(R.id.bookmark_video).setVisible(!videoIsBookmarked);
+		menu.findItem(R.id.unbookmark_video).setVisible(videoIsBookmarked);*/
 	}
 }

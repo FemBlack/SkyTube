@@ -532,6 +532,8 @@ public class YouTubePlayerFragment extends ImmersiveModeFragment implements Medi
 		}
 
 		saveCurrentBrightness();
+
+		videoPlaybackStopped();
 		super.onPause();
 	}
 
@@ -729,13 +731,13 @@ public class YouTubePlayerFragment extends ImmersiveModeFragment implements Medi
 				youTubeVideo.copyUrl(getContext());
 				return true;
 
-			case R.id.bookmark_video:
+			/*case R.id.bookmark_video:
 				youTubeVideo.bookmarkVideo(getContext(), menu);
 				return true;
 
 			case R.id.unbookmark_video:
 				youTubeVideo.unbookmarkVideo(getContext(), menu);
-				return true;
+				return true;*/
 
 			case R.id.view_thumbnail:
 				Intent i = new Intent(getActivity(), ThumbnailViewerActivity.class);

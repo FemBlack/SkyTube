@@ -52,6 +52,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment {
 
 	protected RecyclerView	gridView;
 	private MoPubRecyclerAdapter mRecyclerAdapter;
+	private RequestParameters mRequestParameters;
 
 
 	@Override
@@ -97,7 +98,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment {
 				RequestParameters.NativeAdAsset.MAIN_IMAGE,
 				RequestParameters.NativeAdAsset.CALL_TO_ACTION_TEXT);
 
-		RequestParameters mRequestParameters = new RequestParameters.Builder()
+		mRequestParameters = new RequestParameters.Builder()
 				.location(location)
 				.keywords(keywords)
 				.userDataKeywords(userDataKeywords)
@@ -135,7 +136,9 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment {
 
 		gridView.setAdapter(mRecyclerAdapter);
 		if (mRecyclerAdapter != null) {
-			mRecyclerAdapter.loadAds(getStr(R.string.mopub_native_ad_unit_id), mRequestParameters);
+			//mRecyclerAdapter.loadAds(getStr(R.string.mopub_native_ad_unit_id), mRequestParameters);
+			mRecyclerAdapter.loadAds(getStr(R.string.mopub_native_ad_unit_id),mRequestParameters);
+			//mRecyclerAdapter.refreshAds(getStr(R.string.mopub_native_ad_unit_id),mRequestParameters);
 		}
 
 		//mRecyclerAdapter.loadAds("1de632f25a504ab4ae481009a650627e");
@@ -177,5 +180,13 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment {
 	 * @return The fragment/tab name/title.
 	 */
 	public abstract String getFragmentName();
+
+	@Override
+	public void onRefresh() {
+		videoGridAdapter.refresh(true);
+		if (mRecyclerAdapter != null && mRequestParameters!= null) {
+			mRecyclerAdapter.refreshAds(getStr(R.string.mopub_native_ad_unit_id),mRequestParameters);
+		}
+	}
 
 }

@@ -37,6 +37,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.mopub.common.MoPub;
 import com.mopub.common.SdkConfiguration;
 import com.mopub.common.SdkInitializationListener;
@@ -63,6 +66,7 @@ import free.rm.skytube.gui.fragments.MainFragment;
 import free.rm.skytube.gui.fragments.PlaylistVideosFragment;
 import free.rm.skytube.gui.fragments.SearchVideoGridFragment;
 import free.rm.skytube.gui.fragments.VideosGridFragment;
+import timber.log.Timber;
 
 import static free.rm.skytube.app.SkyTubeApp.getContext;
 import static free.rm.skytube.app.SkyTubeApp.getStr;
@@ -95,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 	private static final String CHANNEL_BROWSER_FRAGMENT = "MainActivity.ChannelBrowserFragment";
 	private static final String PLAYLIST_VIDEOS_FRAGMENT = "MainActivity.PlaylistVideosFragment";
 	private static final String VIDEO_BLOCKER_PLUGIN = "MainActivity.VideoBlockerPlugin";
+    private transient InterstitialAd mInterstitialAd;
 
 	@Nullable
 	transient PersonalInfoManager mPersonalInfoManager;
@@ -167,6 +172,33 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		} else {
 			this.videoBlockerPlugin = new VideoBlockerPlugin(this);
 		}*/
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+		mInterstitialAd.setAdListener(new AdListener() {
+			public void onAdLoaded() {
+				// Call displayInterstitial() function
+				//displayInterstitial();
+			}
+
+			public void onAdClosed() {
+				// Request a new ad if one isn't already loaded, hide the button, and kick off the timer.
+				if (!mInterstitialAd.isLoading() && !mInterstitialAd.isLoaded()) {
+					AdRequest adRequest = new AdRequest.Builder().build();
+					mInterstitialAd.loadAd(adRequest);
+				}
+
+			}
+
+			public void onAdClicked() {
+			}
+
+			public void onAdFailedToLoad(int var1) {
+				//AppUtil.startApp(service, appInfo);
+			}
+
+		});
 	}
 
     public void displayPermissionsActivity() {
@@ -285,6 +317,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 				videoBlockerPlugin.onMenuBlockerIconClicked();
 				return true;*/
 			case R.id.menu_preferences:
+                if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Timber.d("The interstitial wasn't loaded yet.");
+                }
 				Intent i = new Intent(this, PreferencesActivity.class);
 				startActivity(i);
 				return true;

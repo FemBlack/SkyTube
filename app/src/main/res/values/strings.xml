@@ -40,9 +40,11 @@
 
     <!-- Banner ad id. Insert your own banner id, you can get banner id via admob. -->
     <string name="banner_ad_unit_id">ca-app-pub-8390577583063150/4608111466</string>
-    <!--<string name="banner_ad_unit_id_2">ca-app-pub-3940256099942544/6300978111</string>-->
+    <string name="banner_ad_unit_id_2">ca-app-pub-8390577583063150/8818904931</string>
     <!-- Interstitial ad id. Insert your own interstitial id, you can get interstitial id via admob. -->
     <string name="interstitial_ad_unit_id">ca-app-pub-8390577583063150/3676381166</string>
     <string name="mopub_native_ad_unit_id">1de632f25a504ab4ae481009a650627e</string>
+    <string name="mopub_medium_ad_unit_id">85eb2b275f2949ae8afa8f86bfbc9460</string>
+    <string name="mopub_banner_ad_unit_id">e1255a13abc84ff882ba8595bfafe019</string>
 
 </resources>

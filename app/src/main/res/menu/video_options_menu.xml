@@ -16,13 +16,13 @@
 		android:id="@+id/mark_unwatched"
 		android:title="@string/mark_unwatched"
 		android:visible="false"/>
-    <item
+   <!-- <item
         android:id="@+id/bookmark_video"
         android:title="@string/bookmark"/>
     <item
         android:id="@+id/unbookmark_video"
         android:title="@string/unbookmark"
-        android:visible="false"/>
+        android:visible="false"/>-->
     <item
         android:id="@+id/view_thumbnail"
         android:title="@string/view_thumbnail"/>

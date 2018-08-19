@@ -1,0 +1,3 @@
+D:/Work/Android/Workspace/youtube2whatsapp/app/.externalNativeBuild/cmake/ossFullAPkRelease/x86/CMakeFiles/hello-jni.dir
+D:/Work/Android/Workspace/youtube2whatsapp/app/.externalNativeBuild/cmake/ossFullAPkRelease/x86/CMakeFiles/edit_cache.dir
+D:/Work/Android/Workspace/youtube2whatsapp/app/.externalNativeBuild/cmake/ossFullAPkRelease/x86/CMakeFiles/rebuild_cache.dir

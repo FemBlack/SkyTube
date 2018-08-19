@@ -47,6 +47,7 @@
 	<string name="pref_summary_import_subs">Import your subscriptions from your YouTube account.</string>
 	<string name="subs_import_select_backup">Select YouTube XML file to import</string>
 
+	<string name="pref_key_allapps" translatable="false">pref_key_allapps</string>
 	<string name="pref_about_category">About</string>
 	<string name="pref_title_website">Website</string>
 	<string name="pref_key_website" translatable="false">pref_website</string>
@@ -60,11 +61,10 @@
 	<string name="pref_summary_updates">Check for new versions.</string>
 	<string name="pref_title_license">License</string>
 	<string name="pref_key_license" translatable="false">pref_license</string>
+	<string name="url_google_play_apps">https://play.google.com/store/search?q=pub:Riyajudeen Mohamed yousuf</string>
 	<string name="pref_summary_license">GNU General Public License version 3</string>
 	<string name="app_license">
-		Copyright &#169; 2015-2018  Ramon Mifsud\n
-
-		\nThis program is free software: you can redistribute it and/or modify
+		This program is free software: you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
 		the Free Software Foundation (version 3 of the License).\n
 
@@ -77,6 +77,9 @@
 		along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;
 	</string>
 	<string name="i_agree">I Agree</string>
+
+	<string name="all_my_apps_title">My Apps</string>
+	<string name="all_my_apps_summary">Check out my other apps in playstore</string>
 
 
 	<!-- extracted from  YouTube.com > 3 dot menu > Language -->
@@ -449,7 +452,6 @@
 		<item>@string/featured</item>
 		<item>@string/most_popular</item>
 		<item>@string/feed</item>
-		<item>@string/bookmarks</item>
 		<item>@string/downloads</item>
 
 
@@ -463,7 +465,6 @@
 		<item>5</item>
 		<item>6</item>
 		<item>7</item>
-		<item>8</item>
 	</string-array>
 
 	<string name="pref_key_feed_notification" translatable="false">pref_key_feed_notification</string>

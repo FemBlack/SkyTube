@@ -22,24 +22,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,7 +38,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -69,26 +59,14 @@ import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.mopub.mobileads.MoPubView;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
-import at.huber.youtubeExtractor.YtFile;
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.AsyncTaskParallel;
@@ -100,6 +78,7 @@ import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.YouTube.Tasks.GetVideoDescriptionTask;
 import free.rm.skytube.businessobjects.YouTube.Tasks.GetYouTubeChannelInfoTask;
 import free.rm.skytube.businessobjects.YouTube.VideoStream.StreamMetaData;
+import free.rm.skytube.businessobjects.YoutubeDownloader;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
 import free.rm.skytube.businessobjects.db.PlaybackStatusDb;
 import free.rm.skytube.businessobjects.db.Tasks.CheckIfUserSubbedToChannelTask;
@@ -115,8 +94,6 @@ import free.rm.skytube.gui.businessobjects.adapters.CommentsAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.ImmersiveModeFragment;
 import hollowsoft.slidingdrawer.OnDrawerOpenListener;
 import hollowsoft.slidingdrawer.SlidingDrawer;
-
-import static free.rm.skytube.app.SkyTubeApp.getStr;
 
 /**
  * A fragment that holds a standalone YouTube player (version 2).
@@ -153,14 +130,6 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 	//private AdView mAdView;
 
 	public static final String YOUTUBE_VIDEO_OBJ = "YouTubePlayerFragment.yt_video_obj";
-	private String  dirType = null;
-	/** The title that will be displayed by the Android's download manager. */
-	private String  title = null;
-	/** The description that will be displayed by the Android's download manager. */
-	private String  description = null;
-	/** Output file name (without file extension). */
-	private String  outputFileName = null;
-	private String  outputFileExtension = null;
 	public static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
 
 
@@ -528,13 +497,13 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 				youTubeVideo.copyUrl(getContext());
 				return true;
 
-			case R.id.bookmark_video:
+			/*case R.id.bookmark_video:
 				youTubeVideo.bookmarkVideo(getContext(), menu);
 				return true;
 
 			case R.id.unbookmark_video:
 				youTubeVideo.unbookmarkVideo(getContext(), menu);
-				return true;
+				return true;*/
 
 			case R.id.view_thumbnail:
 				Intent i = new Intent(getActivity(), ThumbnailViewerActivity.class);
@@ -543,15 +512,29 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 				return true;
 
 			case R.id.download_video:
-				//youTubeVideo.downloadVideo(getContext());
 				if (youTubeVideo != null) {
-					if (youTubeVideo.isDownloaded()) {
-						shareVideoWhatsApp(new File(youTubeVideo.getFileUri().getPath()));
+					if (youTubeVideo.isDownloaded(true)) {
+						new YoutubeDownloader(youTubeVideo,getActivity()).shareVideoWhatsApp(new File(youTubeVideo.getFileUri(true).getPath()));
 					} else {
-						setVariables(youTubeVideo);
-						getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId());
+						YoutubeDownloader youtubeDownloader = new YoutubeDownloader(youTubeVideo,getActivity());
+						youtubeDownloader.setVariables();
+						youtubeDownloader.getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId(),true);
 					}
 				}
+
+				return true;
+			case R.id.download_audio:
+				if (youTubeVideo != null) {
+					if (youTubeVideo.isDownloaded(false)) {
+						new YoutubeDownloader(youTubeVideo,getActivity()).shareVideoWhatsApp(new File(youTubeVideo.getFileUri(false).getPath()));
+					} else {
+						YoutubeDownloader youtubeDownloader = new YoutubeDownloader(youTubeVideo,getActivity());
+						youtubeDownloader.setVariables();
+						youtubeDownloader.setOutputFileExtension("mp3");
+						youtubeDownloader.getYoutubeDownloadVideoList(YOUTUBE_URL + youTubeVideo.getId(),false);
+					}
+				}
+
 				return true;
 
 			/*case R.id.block_channel:
@@ -573,17 +556,17 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		hideNavigationBar();
 	}
 
-	private void showListDialog(final Map<String,YtFile> map) {
+	/*private void showListDialog(final Map<String,YtFile> map) {
 		new MaterialDialog.Builder(getActivity())
 				.title(R.string.download_video)
 				.items(map.keySet())
 				.itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
 					@Override
 					public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-						/**
+						*//**
 						 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
 						 * returning false here won't allow the newly selected radio button to actually be selected.
-						 **/
+						 **//*
 						new DownloadFile().execute(map.get(dialog.getItems().get(which)).getUrl(),"");
 						return true;
 					}
@@ -625,10 +608,10 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 				showListDialog(map);
 			}
 		}.extract(youtubeLink, false, false);
-	}
+	}*/
 
 	// DownloadFile AsyncTask
-	private class DownloadFile extends AsyncTask<String, Integer, String> {
+/*	private class DownloadFile extends AsyncTask<String, Integer, String> {
 
 		MaterialDialog md;
 		private MoPubView mMoPubView;
@@ -678,10 +661,10 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 				// if there's already a local file for this video for some reason, then do not redownload the
 				// file and halt
 				file = new File(Environment.getExternalStoragePublicDirectory(dirType), downloadFileName);
-				/*if (file.exists()) {
+				*//*if (file.exists()) {
 					onFileDownloadCompleted(true, file);
 					return "";
-				}*/
+				}*//*
 
 				URL url = new URL(Url[0]);
 				URLConnection connection = url.openConnection();
@@ -786,9 +769,9 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 			success = DownloadedVideosDb.getVideoDownloadsDb().add(youTubeVideo, localFile.toURI().toString());
 		}
 
-		/*Toast.makeText(getContext(),
+		*//*Toast.makeText(getContext(),
 				String.format(getContext().getString(success ? R.string.video_downloaded : R.string.video_download_stream_error), youTubeVideo.getTitle()),
-				Toast.LENGTH_LONG).show();*/
+				Toast.LENGTH_LONG).show();*//*
 
 		shareVideoWhatsApp(localFile);
 	}
@@ -797,34 +780,12 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		Toast.makeText(getContext(),
 				R.string.external_storage_not_available,
 				Toast.LENGTH_LONG).show();
-	}
-
-
-	private void shareVideoWhatsApp(File file) {
-
-		if(!appInstalledOrNot("com.whatsapp")){
-			Toast.makeText(getContext(),
-					R.string.whatsapp_install,
-					Toast.LENGTH_LONG).show();
-		}else{
-			Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
-					? FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext().getPackageName() + ".provider", file)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
-					: Uri.fromFile(file);
-
-			Intent videoshare = new Intent(Intent.ACTION_SEND);
-			videoshare.setType("*/*");
-			videoshare.setPackage("com.whatsapp");
-			videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			videoshare.putExtra(Intent.EXTRA_STREAM,uri);
-
-			startActivity(videoshare);
-		}
+	}*/
 
 
 
-	}
 
-	private boolean appInstalledOrNot(String uri) {
+	/*private boolean appInstalledOrNot(String uri) {
 		PackageManager pm = getActivity().getPackageManager();
 		boolean app_installed;
 		try {
@@ -837,15 +798,15 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		return app_installed;
 	}
 
-	/**
+	*//**
 	 * Checks if the external storage is available for read and write.
 	 *
 	 * @return True if the external storage is available.
-	 */
+	 *//*
 	private boolean isExternalStorageAvailable() {
 		String state = Environment.getExternalStorageState();
 		return Environment.MEDIA_MOUNTED.equals(state);
-	}
+	}*/
 
 	/**
 	 * Will asynchronously retrieve additional video information such as channel avatar ...etc
@@ -1363,13 +1324,14 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 
 	}
 
-	/*@Override
+	@Override
 	public void onPause() {
-		mAdView.pause();
+		player.setPlayWhenReady(false);
+		player.getPlaybackState();
 		super.onPause();
 	}
 
-	@Override
+	/*@Override
 	public void onResume() {
 		super.onResume();
 		mAdView.resume();

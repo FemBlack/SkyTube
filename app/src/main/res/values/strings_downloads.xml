@@ -2,6 +2,7 @@
 <resources>
 	<string name="downloads">Downloads</string>
 	<string name="download_video">Download Video</string>
+	<string name="download_audio">Download Audio</string>
 	<string name="starting_video_download">Downloading \'%s\'…</string>
 	<string name="video_download_stream_error">Could not download \'%s\'.</string>
 	<string name="delete_download">Delete Download</string>
@@ -10,9 +11,10 @@
 	<string name="downloads_disabled_warning">Video downloading is disabled as you are not using Wi-Fi.\nTo enable it, please go to Preferences > Others  and tick \'Allow downloads on Mobile Networks\'</string>
 	<string name="playing_video_file_missing">The download for this video was not found. Playing remotely.</string>
 	<string name="external_storage_not_available">Unable to download the file as the external storage is not available.</string>
-	<string name="whatsapp_status_video">Set video as Whatsapp Status</string>
-	<string name="whatsapp_status_audio">Set audio as Whatsapp Status</string>
+	<string name="whatsapp_status_video">Set Video as Whatsapp Status</string>
+	<string name="whatsapp_status_audio">Set Audio as Whatsapp Status</string>
 	<string name="whatsapp_install">Please install Whatsapp from playstore</string>
 	<string name="error_download">Error while downloading the video</string>
 	<string name="error_download_audio">Separate audio format is not available for the selected video</string>
+	<string name="share_msg">"Vibe - Billions of Whatsapp Video Status\nClick the link below to download the free app\nhttps://play.google.com/store/apps/details?id=ind.ziyaray.youtube"</string>
 </resources>

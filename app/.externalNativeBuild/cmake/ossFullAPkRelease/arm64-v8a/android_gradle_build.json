@@ -1,0 +1,41 @@
+
+{
+	"buildFiles" : 
+	[
+		"D:/Work/Android/Workspace/youtube2whatsapp/app/src/main/cpp/CMakeLists.txt"
+	],
+	"cFileExtensions" : [ "c" ],
+	"cleanCommands" : 
+	[
+		"D:\\Work\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Work\\Android\\Workspace\\youtube2whatsapp\\app\\.externalNativeBuild\\cmake\\ossFullAPkRelease\\arm64-v8a --target clean"
+	],
+	"libraries" : 
+	{
+		"hello-jni-Release-arm64-v8a" : 
+		{
+			"abi" : "arm64-v8a",
+			"artifactName" : "hello-jni",
+			"buildCommand" : "D:\\Work\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Work\\Android\\Workspace\\youtube2whatsapp\\app\\.externalNativeBuild\\cmake\\ossFullAPkRelease\\arm64-v8a --target hello-jni",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=aarch64-none-linux-android --gcc-toolchain=D:/Work/Android/sdk/ndk-bundle/toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=D:/Work/Android/sdk/ndk-bundle/sysroot -Dhello_jni_EXPORTS  -isystem D:/Work/Android/sdk/ndk-bundle/sysroot/usr/include/aarch64-linux-android -D__ANDROID_API__=21 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -O2 -DNDEBUG  -fPIC      -c ",
+					"src" : "D:/Work/Android/Workspace/youtube2whatsapp/app/src/main/cpp/hello-jni.c",
+					"workingDirectory" : "D:/Work/Android/Workspace/youtube2whatsapp/app/.externalNativeBuild/cmake/ossFullAPkRelease/arm64-v8a"
+				}
+			],
+			"output" : "D:/Work/Android/Workspace/youtube2whatsapp/app/build/intermediates/cmake/ossFullAPk/release/obj/arm64-v8a/libhello-jni.so",
+			"toolchain" : "4111820247"
+		}
+	},
+	"toolchains" : 
+	{
+		"4111820247" : 
+		{
+			"cCompilerExecutable" : "D:/Work/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "D:/Work/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}
