@@ -30,11 +30,11 @@ import java.util.List;
 public abstract class RecyclerViewAdapterEx<T, HolderType extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<HolderType> {
 
 	private Context context;
-	protected List<T> list;
-
 	public RecyclerViewAdapterEx(Context context) {
 		this(context, new ArrayList<T>());
 	}
+
+	protected List<T> list;
 
 	public RecyclerViewAdapterEx(Context context, List<T> list) {
 		this.context  = context;

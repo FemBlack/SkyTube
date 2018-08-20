@@ -118,6 +118,9 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 		});
 	}
 
+	public GridViewHolder(View view) {
+		super(view);
+	}
 
 
 	/**

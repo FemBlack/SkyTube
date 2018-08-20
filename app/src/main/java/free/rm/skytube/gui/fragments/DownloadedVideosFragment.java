@@ -4,13 +4,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import com.facebook.ads.NativeAdsManager;
+
 import butterknife.BindView;
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.AsyncTaskParallel;
 import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
-import free.rm.skytube.gui.businessobjects.adapters.OrderableVideoGridAdapter;
+import free.rm.skytube.gui.businessobjects.adapters.VideoGridAdapter;
 
 /**
  * A fragment that holds videos downloaded by the user.
@@ -24,7 +26,12 @@ public class DownloadedVideosFragment extends VideosGridFragment implements Down
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		videoGridAdapter = new OrderableVideoGridAdapter(getActivity(), DownloadedVideosDb.getVideoDownloadsDb());
+		String placement_id = "2363436417216774_2363439160549833";
+		mNativeAdsManager = new NativeAdsManager(getActivity(), placement_id, 5);
+		mNativeAdsManager.loadAds();
+		mNativeAdsManager.setListener(this);
+
+		videoGridAdapter = new VideoGridAdapter(getActivity(),mNativeAdsManager);
 	}
 
 

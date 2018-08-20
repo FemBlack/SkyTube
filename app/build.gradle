@@ -150,12 +150,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
     implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
-    // For native video. This will automatically also include native static
-    implementation('com.mopub:mopub-sdk-native-video:5.3.0@aar') {
-        transitive = true
-    }
-    // For banners
-    implementation('com.mopub:mopub-sdk-banner:5.3.0@aar') {
+    implementation('com.mopub:mopub-sdk:5.3.0@aar') {
         transitive = true
     }
     // as we have over 65536 lines of code...
@@ -165,6 +160,7 @@ dependencies {
     // FFmpeg project
     implementation project(':android-ffmpeg')
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.facebook.android:audience-network-sdk:4.99.1'
 }
 
 configurations {

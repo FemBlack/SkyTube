@@ -27,7 +27,6 @@ import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.AsyncTaskParallel;
 import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.businessobjects.db.BookmarksDb;
-import free.rm.skytube.gui.businessobjects.adapters.OrderableVideoGridAdapter;
 
 /**
  * Fragment that displays bookmarked videos.
@@ -39,7 +38,7 @@ public class BookmarksFragment extends VideosGridFragment implements BookmarksDb
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		videoGridAdapter = new OrderableVideoGridAdapter(getActivity(), BookmarksDb.getBookmarksDb());
+		//videoGridAdapter = new OrderableVideoGridAdapter(getActivity(), BookmarksDb.getBookmarksDb());
 	}
 
 	@Override
