@@ -169,7 +169,7 @@ public class YoutubeDownloader implements MoPubView.BannerAdListener {
         // now, while you are testing and replace it later when you have signed up.
         // While you are using this temporary code you will only get test ads and if you release
         // your code like this to the Google Play your users will not receive ads (you will get a no fill error).
-        nativeAd = new NativeAd(context, "2363436417216774_2363439160549833");
+        nativeAd = new NativeAd(context, "2363436417216774_2365566657003750");
         nativeAd.setAdListener(new NativeAdListener() {
             @Override
             public void onMediaDownloaded(Ad ad) {
@@ -187,6 +187,10 @@ public class YoutubeDownloader implements MoPubView.BannerAdListener {
                 if (nativeAd == null || nativeAd != ad) {
                     return;
                 }
+
+                nativeAd.unregisterView();
+
+
                 // Inflate Native Ad into Container
                 inflateAd(nativeAd,md);
             }
@@ -241,7 +245,9 @@ public class YoutubeDownloader implements MoPubView.BannerAdListener {
         // Create a list of clickable views
         List<View> clickableViews = new ArrayList<>();
         clickableViews.add(nativeAdTitle);
+        clickableViews.add(nativeAdMedia);
         clickableViews.add(nativeAdCallToAction);
+
 
         // Register the Title and CTA button to listen for clicks.
         nativeAd.registerViewForInteraction(
