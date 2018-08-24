@@ -18,6 +18,7 @@
 package free.rm.skytube.gui.fragments;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,8 +30,6 @@ import android.widget.GridView;
 import com.bumptech.glide.Glide;
 import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAdsManager;
-import com.mopub.nativeads.MoPubRecyclerAdapter;
-import com.mopub.nativeads.RequestParameters;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
@@ -38,16 +37,12 @@ import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.adapters.VideoGridAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.BaseVideosGridFragment;
 
-import static free.rm.skytube.app.SkyTubeApp.getStr;
-
 /**
  * A fragment that will hold a {@link GridView} full of YouTube videos.
  */
 public abstract class VideosGridFragment extends BaseVideosGridFragment implements NativeAdsManager.Listener{
 
 	protected RecyclerView	gridView;
-	private MoPubRecyclerAdapter mRecyclerAdapter;
-	private RequestParameters mRequestParameters;
 	protected NativeAdsManager mNativeAdsManager;
 
 	@Override
@@ -76,7 +71,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 
 		gridView.setHasFixedSize(true);
 		gridView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns)));
-		gridView.setAdapter(videoGridAdapter);
+		//gridView.setAdapter(videoGridAdapter);
 
 		return view;
 	}
@@ -87,21 +82,24 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 			return;
 		}
 
-		gridView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns)));
+		final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns));
+		gridView.setLayoutManager(gridLayoutManager);
 		DividerItemDecoration itemDecoration =
-				new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
+				new DividerItemDecoration(getActivity(), gridLayoutManager.getOrientation());
+		itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
 		gridView.addItemDecoration(itemDecoration);
 		gridView.setAdapter(videoGridAdapter);
+		//videoGridAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onAdError(AdError error) {
 		gridView.setAdapter(videoGridAdapter);
+		//videoGridAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onDestroy() {
-		mRecyclerAdapter.destroy();
 		super.onDestroy();
 		Glide.get(getActivity()).clearMemory();
 	}
@@ -135,9 +133,6 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 	@Override
 	public void onRefresh() {
 		videoGridAdapter.refresh(true);
-		if (mRecyclerAdapter != null && mRequestParameters!= null) {
-			mRecyclerAdapter.refreshAds(getStr(R.string.mopub_native_ad_unit_id),mRequestParameters);
-		}
 	}
 
 }

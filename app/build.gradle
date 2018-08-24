@@ -41,14 +41,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             // Full Apk
-            aaptOptions {
+            /*aaptOptions {
                 ignoreAssetsPattern "!*ffprobe:"
-            }
+            }*/
 
             // Arm Apk
-          /*  aaptOptions {
+            aaptOptions {
                 ignoreAssetsPattern "!*ffprobe:!x86:"
-            }*/
+            }
 
             // x86 Apk
            /* aaptOptions {
@@ -150,9 +150,9 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
     implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
-    implementation('com.mopub:mopub-sdk:5.3.0@aar') {
+   /* implementation('com.mopub:mopub-sdk:5.3.0@aar') {
         transitive = true
-    }
+    }*/
     // as we have over 65536 lines of code...
     // proprietary module
     //extraImplementation files('libs/YouTubeAndroidPlayerApi.jar')

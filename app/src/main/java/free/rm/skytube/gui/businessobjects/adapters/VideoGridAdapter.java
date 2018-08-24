@@ -190,7 +190,11 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
 	}
     @Override
     public int getItemViewType(int position) {
-        return position % AD_DISPLAY_FREQUENCY == 0 ? AD_TYPE : POST_TYPE;
+		/*if ((position % AD_DISPLAY_FREQUENCY) == 0 && position!= 0) {
+			return  AD_TYPE;
+		}
+        return POST_TYPE;*/
+		return position % AD_DISPLAY_FREQUENCY == 0 ? AD_TYPE : POST_TYPE;
     }
 
 
@@ -225,7 +229,7 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
 
     @Override
     public int getItemCount() {
-        return ((getList() != null )  ? getList().size() :  0) + ((mAdItems != null )  ? mAdItems.size() :  0);
+        return  getList().size() + mAdItems.size();
     }
 
 	@Override
@@ -233,7 +237,7 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
         if (viewHolder.getItemViewType() == AD_TYPE) {
             NativeAd ad;
 
-            if (((mAdItems != null )  ? mAdItems.size() :  0) > position / AD_DISPLAY_FREQUENCY) {
+            if (mAdItems.size() > position / AD_DISPLAY_FREQUENCY) {
                 ad = mAdItems.get(position / AD_DISPLAY_FREQUENCY);
             } else {
                 ad = mNativeAdsManager.nextNativeAd();
@@ -270,8 +274,8 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
 
             if (viewHolder != null) {
                 //Calculate where the next postItem index is by subtracting ads we've shown.
-                position = position - (position / AD_DISPLAY_FREQUENCY) - 1;
-                viewHolder.updateInfo(get(position), getContext(), listener);
+				int index = position - (position / AD_DISPLAY_FREQUENCY) - 1;
+                viewHolder.updateInfo(get(index), getContext(), listener);
             }
 
             // if it reached the bottom of the list, then try to get the next page of videos

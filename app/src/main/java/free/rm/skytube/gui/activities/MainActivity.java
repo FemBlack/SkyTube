@@ -23,14 +23,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,14 +37,6 @@ import android.widget.FrameLayout;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.mopub.common.MoPub;
-import com.mopub.common.SdkConfiguration;
-import com.mopub.common.SdkInitializationListener;
-import com.mopub.common.privacy.ConsentDialogListener;
-import com.mopub.common.privacy.ConsentStatus;
-import com.mopub.common.privacy.ConsentStatusChangeListener;
-import com.mopub.common.privacy.PersonalInfoManager;
-import com.mopub.mobileads.MoPubErrorCode;
 
 import java.io.Serializable;
 
@@ -69,7 +58,6 @@ import free.rm.skytube.gui.fragments.VideosGridFragment;
 import timber.log.Timber;
 
 import static free.rm.skytube.app.SkyTubeApp.getContext;
-import static free.rm.skytube.app.SkyTubeApp.getStr;
 
 /**
  * Main activity (launcher).  This activity holds {@link free.rm.skytube.gui.fragments.VideosGridFragment}.
@@ -101,8 +89,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 	private static final String VIDEO_BLOCKER_PLUGIN = "MainActivity.VideoBlockerPlugin";
     private transient InterstitialAd mInterstitialAd;
 
-	@Nullable
-	transient PersonalInfoManager mPersonalInfoManager;
 	public static final String LOGTAG = VideosGridFragment.class.getName();
 
 
@@ -124,13 +110,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		setContentView(R.layout.activity_fragment_holder);
 		ButterKnife.bind(this);
 
-		SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(getStr(R.string.mopub_native_ad_unit_id))
-				.build();
-		MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
-		mPersonalInfoManager = MoPub.getPersonalInformationManager();
-		if (mPersonalInfoManager != null) {
-			mPersonalInfoManager.subscribeConsentStatusChangeListener(initConsentChangeListener());
-		}
 
 		if(fragmentContainer != null) {
 			if(savedInstanceState != null) {
@@ -560,51 +539,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 
 	}
 */
-	private SdkInitializationListener initSdkListener() {
-		return new SdkInitializationListener() {
 
-			@Override
-			public void onInitializationFinished() {
-				Log.d(LOGTAG, "SDK initialized.");
-
-				if (mPersonalInfoManager != null && mPersonalInfoManager.shouldShowConsentDialog()) {
-					mPersonalInfoManager.loadConsentDialog(initDialogLoadListener());
-				}
-			}
-		};
-	}
-
-	private ConsentStatusChangeListener initConsentChangeListener() {
-		return new ConsentStatusChangeListener() {
-
-			@Override
-			public void onConsentStateChange(@NonNull ConsentStatus oldConsentStatus,
-											 @NonNull ConsentStatus newConsentStatus,
-											 boolean canCollectPersonalInformation) {
-				Log.d(LOGTAG, "Consent: " + newConsentStatus.name());
-				if (mPersonalInfoManager != null && mPersonalInfoManager.shouldShowConsentDialog()) {
-					mPersonalInfoManager.loadConsentDialog(initDialogLoadListener());
-				}
-			}
-		};
-	}
-
-	private ConsentDialogListener initDialogLoadListener() {
-		return new ConsentDialogListener() {
-
-			@Override
-			public void onConsentDialogLoaded() {
-				if (mPersonalInfoManager != null) {
-					mPersonalInfoManager.showConsentDialog();
-				}
-			}
-
-			@Override
-			public void onConsentDialogLoadFailed(@NonNull MoPubErrorCode moPubErrorCode) {
-				Log.d(LOGTAG,  "Consent dialog failed to load.");
-			}
-		};
-	}
 
 
 }

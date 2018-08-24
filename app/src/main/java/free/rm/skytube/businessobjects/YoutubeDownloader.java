@@ -29,8 +29,6 @@ import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdListener;
-import com.mopub.mobileads.MoPubErrorCode;
-import com.mopub.mobileads.MoPubView;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -62,7 +60,7 @@ import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.AUDIO;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.UNDERSCORE;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.VIDEO;
 
-public class YoutubeDownloader implements MoPubView.BannerAdListener {
+public class YoutubeDownloader  {
 
     private YouTubeVideo            youTubeVideo = null;
 
@@ -261,7 +259,6 @@ public class YoutubeDownloader implements MoPubView.BannerAdListener {
     private class DownloadFile extends AsyncTask<YtFile, Integer, String> {
 
         MaterialDialog md;
-        private MoPubView mMoPubView;
         ProgressBar progressBar;
         private int progressStatus = 0;
         private TextView textView;
@@ -275,19 +272,10 @@ public class YoutubeDownloader implements MoPubView.BannerAdListener {
                     .title( (youtubeFile.getFormat().getHeight() == -1)  ? R.string.download_audio  :   R.string.download_video)
                     .customView(R.layout.mrect_ad_facebook, true)
                     .build();
-           // mMoPubView = (MoPubView) md.findViewById(R.id.banner_mopubview);
             progressBar = (ProgressBar) md.findViewById(R.id.progressBar);
             progressBar.setMax(100);
             textView = (TextView) md.findViewById(R.id.textView);
             progressStatus += 1;
-
-           /* RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) mMoPubView.getLayoutParams();
-            layoutParams.width = getWidth();
-            layoutParams.height = getHeight();*/
-           /* mMoPubView.setLayoutParams(layoutParams);
-            mMoPubView.setAdUnitId(getStr(R.string.mopub_medium_ad_unit_id));
-            mMoPubView.loadAd();*/
             loadNativeAd(md);
             md.show();
         }
@@ -643,40 +631,4 @@ public class YoutubeDownloader implements MoPubView.BannerAdListener {
         this.outputFileExtension = outputFileExtension;
     }
 
-    // BannerAdListener
-    @Override
-    public void onBannerLoaded(MoPubView banner) {
-        Toast.makeText(getContext(),
-               "loaded",
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onBannerFailed(MoPubView banner, MoPubErrorCode errorCode) {
-        final String errorMessage = (errorCode != null) ? errorCode.toString() : "";
-        Toast.makeText(getContext(),
-                " failed to load: " + errorMessage,
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onBannerClicked(MoPubView banner) {
-        Toast.makeText(getContext(),
-                "clicked",
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onBannerExpanded(MoPubView banner) {
-        Toast.makeText(getContext(),
-                "expanded",
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onBannerCollapsed(MoPubView banner) {
-        Toast.makeText(getContext(),
-                "collapsed",
-                Toast.LENGTH_LONG).show();
-    }
 }
