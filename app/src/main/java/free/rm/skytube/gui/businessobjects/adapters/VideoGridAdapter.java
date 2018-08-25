@@ -77,7 +77,7 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
 	private NativeAdsManager mNativeAdsManager;
 	private Context context;
 
-	private static final int AD_DISPLAY_FREQUENCY = 5;
+	private static final int AD_DISPLAY_FREQUENCY = 7;
 	private static final int POST_TYPE = 0;
 	private static final int AD_TYPE = 1;
 

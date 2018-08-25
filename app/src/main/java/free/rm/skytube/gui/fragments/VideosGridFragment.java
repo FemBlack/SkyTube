@@ -71,7 +71,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 
 		gridView.setHasFixedSize(true);
 		gridView.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns)));
-		//gridView.setAdapter(videoGridAdapter);
+		gridView.setAdapter(videoGridAdapter);
 
 		return view;
 	}
@@ -94,7 +94,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 
 	@Override
 	public void onAdError(AdError error) {
-		gridView.setAdapter(videoGridAdapter);
+		//gridView.setAdapter(videoGridAdapter);
 		//videoGridAdapter.notifyDataSetChanged();
 	}
 

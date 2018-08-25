@@ -161,6 +161,8 @@ public class YoutubeDownloader  {
 
     NativeAd nativeAd;
     private LinearLayout adView;
+    private final int MAX_NUMBER_OF_RETRIES = 3;
+    private int retryCount = 0;
     private void loadNativeAd(final MaterialDialog md) {
         // Instantiate a NativeAd object.
         // NOTE: the placement ID will eventually identify this as your App, you can ignore it for
@@ -176,7 +178,10 @@ public class YoutubeDownloader  {
 
             @Override
             public void onError(Ad ad, AdError adError) {
-
+                if(retryCount < MAX_NUMBER_OF_RETRIES) {
+                    retryCount += 1;
+                    nativeAd.loadAd();
+                }
             }
 
             @Override
@@ -533,6 +538,7 @@ public class YoutubeDownloader  {
             }, 3000);
         }
     }
+
 
 
     private String getCompleteFileName(String outputFileName, Uri remoteFileUri) {
