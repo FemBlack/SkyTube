@@ -17,6 +17,8 @@ bin/
 gen/
 app/extra/
 *.iml
+app/ossWithx86/
+app/ossWithARM/
 
 # F-Droid files
 fdroid/

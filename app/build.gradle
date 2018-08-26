@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
@@ -9,8 +10,8 @@ android {
         minSdkVersion 16
         targetSdkVersion 28
 
-        versionName "23"    // digits of the *fractional part* shall NOT be > than "9"
-        versionCode 23
+        versionName "27"    // digits of the *fractional part* shall NOT be > than "9"
+        versionCode 27
 
         // Third party devs:  pls be ethical and change the below keys
         buildConfigField 'String',   'YOUTUBE_API_KEYS_DEBUG', '"AIzaSyAeZjb7pz0RgGrLZ3Bh7vJb6ydQTlJ4Ooo"'
@@ -51,7 +52,7 @@ android {
             }
 
             // x86 Apk
-           /* aaptOptions {
+            /*aaptOptions {
                 ignoreAssetsPattern "!*ffprobe:!arm:"
             }*/
         }
@@ -79,8 +80,8 @@ android {
         ossWithx86 {
             applicationId "ind.ziyaray.youtube"
             resValue "string", "app_name", "Vibe"
-            versionCode 24
-            versionName "24"
+            versionCode 28
+            versionName "28"
             ndk {
                 abiFilter 'x86'
             }
@@ -161,9 +162,14 @@ dependencies {
     implementation project(':android-ffmpeg')
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.facebook.android:audience-network-sdk:4.99.1'
+    implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.google.firebase:firebase-messaging:17.3.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 }
 
 configurations {
     cleanedAnnotations
     compile.exclude group: 'org.jetbrains' , module:'annotations'
 }
+
+apply plugin: 'com.google.gms.google-services'
