@@ -18,6 +18,7 @@
 package free.rm.skytube.gui.activities;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -25,10 +26,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.interfaces.YouTubePlayerFragmentInterface;
 import free.rm.skytube.gui.businessobjects.BackButtonActivity;
+import free.rm.skytube.gui.businessobjects.YouTubePlayer;
 import free.rm.skytube.gui.businessobjects.fragments.FragmentEx;
 import free.rm.skytube.gui.fragments.YouTubePlayerFragment;
 import free.rm.skytube.gui.fragments.YouTubePlayerV2Fragment;
@@ -41,6 +47,9 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 
 	private FragmentEx videoPlayerFragment;
 	private YouTubePlayerFragmentInterface fragmentListener;
+	private static String NO_OF_AD_LAUNCH = "AD_LAUNCH_COUNT";
+	private static int adLaunchCount = 0;
+	private static InterstitialAd mInterstitialAd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +131,8 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 	public void onBackPressed() {
 		fragmentListener.videoPlaybackStopped();
 		super.onBackPressed();
+		YouTubePlayer.displayAd();
+
 	}
 
 	// If the back button in the toolbar is hit, save the video's progress (if playback history is not disabled)
@@ -131,5 +142,35 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 			fragmentListener.videoPlaybackStopped();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void saveLaunchCountToPreference() {
+		SharedPreferences.Editor editor = SkyTubeApp.getPreferenceManager().edit();
+		editor.putFloat(NO_OF_AD_LAUNCH, adLaunchCount);
+		editor.apply();
+	}
+
+	private void loadInterstitialAd() {
+		mInterstitialAd = new InterstitialAd(this);
+		mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+		mInterstitialAd.loadAd(new AdRequest.Builder().build());
+		mInterstitialAd.setAdListener(new AdListener() {
+			public void onAdLoaded() {
+				if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+					mInterstitialAd.show();
+				}
+			}
+
+			public void onAdClosed() {
+
+			}
+
+			public void onAdClicked() {
+			}
+
+			public void onAdFailedToLoad(int var1) {
+			}
+
+		});
 	}
 }

@@ -19,8 +19,15 @@ package free.rm.skytube.gui.businessobjects;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
+import free.rm.skytube.R;
+import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.gui.activities.YouTubePlayerActivity;
 import free.rm.skytube.gui.fragments.YouTubePlayerFragment;
@@ -29,6 +36,10 @@ import free.rm.skytube.gui.fragments.YouTubePlayerFragment;
  * Launches YouTube player.
  */
 public class YouTubePlayer {
+
+	private static String NO_OF_AD_LAUNCH = "AD_LAUNCH_COUNT";
+	private static int adLaunchCount = 0;
+	private static InterstitialAd mInterstitialAd;
 
 	/**
 	 * Launches the custom-made YouTube player so that the user can view the selected video.
@@ -39,6 +50,15 @@ public class YouTubePlayer {
 		Intent i = new Intent(context, YouTubePlayerActivity.class);
 		i.putExtra(YouTubePlayerFragment.YOUTUBE_VIDEO_OBJ, youTubeVideo);
 		context.startActivity(i);
+		if (adLaunchCount >= 5) {
+			adLaunchCount = 0;
+			saveLaunchCountToPreference();
+			loadInterstitialAd(context);
+
+		} else {
+			adLaunchCount++;
+			saveLaunchCountToPreference();
+		}
 	}
 
 
@@ -52,6 +72,40 @@ public class YouTubePlayer {
 		i.setAction(Intent.ACTION_VIEW);
 		i.setData(Uri.parse(videoUrl));
 		context.startActivity(i);
+	}
+
+	private static void saveLaunchCountToPreference() {
+		SharedPreferences.Editor editor = SkyTubeApp.getPreferenceManager().edit();
+		editor.putFloat(NO_OF_AD_LAUNCH, adLaunchCount);
+		editor.apply();
+	}
+
+	private static void loadInterstitialAd(Context context) {
+		mInterstitialAd = new InterstitialAd(context);
+		mInterstitialAd.setAdUnitId(context.getString(R.string.interstitial_ad_unit_id));
+		mInterstitialAd.loadAd(new AdRequest.Builder().build());
+		mInterstitialAd.setAdListener(new AdListener() {
+			public void onAdLoaded() {
+
+			}
+
+			public void onAdClosed() {
+
+			}
+
+			public void onAdClicked() {
+			}
+
+			public void onAdFailedToLoad(int var1) {
+			}
+
+		});
+	}
+
+	public static void displayAd() {
+		if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+			mInterstitialAd.show();
+		}
 	}
 
 }
