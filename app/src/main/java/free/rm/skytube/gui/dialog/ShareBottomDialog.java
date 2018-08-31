@@ -59,7 +59,7 @@ public class ShareBottomDialog extends BottomBaseDialog<ShareBottomDialog> {
         mLlSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //T.showShort(mContext, "短信");
+                YoutubeDownloader.androidShare();
                 dismiss();
             }
         });

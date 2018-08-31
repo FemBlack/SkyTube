@@ -659,6 +659,17 @@ public class YoutubeDownloader  {
         }
     }
 
+    public static void androidShare() {
+        Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
+                ? FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", videoFile)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+                : Uri.fromFile(videoFile);
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
+        share.setType("video/*");
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        getContext().startActivity(share);
+    }
     public static void shareVideo() {
         final ShareBottomDialog dialog = new ShareBottomDialog(staticContext);
         dialog.show();

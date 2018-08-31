@@ -23,7 +23,7 @@
             <ImageView
                 android:layout_width="43dp"
                 android:layout_height="43dp"
-                android:src="@drawable/whatsapp" />
+                android:src="@drawable/if_whatsapp" />
 
             <!--<TextView
                 android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
             <ImageView
                 android:layout_width="43dp"
                 android:layout_height="43dp"
-                android:src="@drawable/facebook" />
+                android:src="@drawable/if_facebook" />
 
             <!--<TextView
                 android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
             <ImageView
                 android:layout_width="43dp"
                 android:layout_height="43dp"
-                android:src="@drawable/instagram" />
+                android:src="@drawable/if_instagram" />
 
            <!-- <TextView
                 android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
             <ImageView
                 android:layout_width="43dp"
                 android:layout_height="43dp"
-                android:src="@drawable/share" />
+                android:src="@drawable/if_share" />
 
            <!-- <TextView
                 android:layout_width="wrap_content"
