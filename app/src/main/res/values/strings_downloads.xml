@@ -14,8 +14,10 @@
 	<string name="whatsapp_status_video">Set Video as Whatsapp Status</string>
 	<string name="whatsapp_status_audio">Set Audio as Whatsapp Status</string>
 	<string name="whatsapp_install">Please install Whatsapp from playstore</string>
+	<string name="fb_install">Please install Facebook from playstore</string>
+	<string name="instagram_install">Please install Instagram from playstore</string>
 	<string name="error_download">Error while downloading the video</string>
 	<string name="error_download_audio">Separate audio format is not available for the selected video</string>
-	<string name="share_msg">"Vibe - Billions of Whatsapp Video Status\nDownload the free app\nhttps://play.google.com/store/apps/details?id=ind.ziyaray.youtube"</string>
+	<string name="share_msg">"Vibe - Billions of Video Status\nDownload the free app\nhttps://play.google.com/store/apps/details?id=ind.ziyaray.youtube"</string>
 	<string name="exit_msg">Are you sure you want to exit?</string>
 </resources>

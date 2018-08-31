@@ -22,6 +22,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setTitle(R.string.app_name_vibe);
         displayPermissionsActivity();
 		// check for updates (one time only)
 		if (!updatesCheckerTaskRan) {
@@ -125,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 
 		setContentView(R.layout.activity_fragment_holder);
 		ButterKnife.bind(this);
-
 
 		if(fragmentContainer != null) {
 			if(savedInstanceState != null) {
@@ -194,6 +195,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 			}
 
 		});
+
+		if (!isInternetIsConnected(this)) {
+			new MaterialDialog.Builder(this)
+					.content(R.string.no_internet)
+					.positiveText(R.string.ok)
+					.show();
+			return;
+		}
 	}
 
     public void displayPermissionsActivity() {
@@ -205,6 +214,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 	@Override
 	public void onExternalStoragePermissionsGranted() {
 
+	}
+
+	public static boolean isInternetIsConnected(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		if (activeNetwork != null) { // connected to the internet
+			if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+				// connected to wifi
+				return true;
+
+			} else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+				// connected to the mobile provider's data plan
+				return true;
+			}
+		} else {
+			// not connected to the internet
+			return false;
+		}
+		return false;
 	}
 
 	@Override

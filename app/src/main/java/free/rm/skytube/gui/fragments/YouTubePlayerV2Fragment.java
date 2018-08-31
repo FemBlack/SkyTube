@@ -514,7 +514,9 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 			case R.id.download_video:
 				if (youTubeVideo != null) {
 					if (youTubeVideo.isDownloaded(true)) {
-						new YoutubeDownloader(youTubeVideo,getActivity()).shareVideoWhatsApp(new File(youTubeVideo.getFileUri(true).getPath()));
+						new YoutubeDownloader(youTubeVideo,getActivity());
+						YoutubeDownloader.videoFile = new File(youTubeVideo.getFileUri(true).getPath());
+						YoutubeDownloader.shareVideo();
 					} else {
 						YoutubeDownloader youtubeDownloader = new YoutubeDownloader(youTubeVideo,getActivity());
 						youtubeDownloader.setVariables();
@@ -526,7 +528,9 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 			case R.id.download_audio:
 				if (youTubeVideo != null) {
 					if (youTubeVideo.isDownloaded(false)) {
-						new YoutubeDownloader(youTubeVideo,getActivity()).shareVideoWhatsApp(new File(youTubeVideo.getFileUri(false).getPath()));
+						new YoutubeDownloader(youTubeVideo,getActivity());
+						YoutubeDownloader.videoFile = new File(youTubeVideo.getFileUri(false).getPath());
+						YoutubeDownloader.shareVideo();
 					} else {
 						YoutubeDownloader youtubeDownloader = new YoutubeDownloader(youTubeVideo,getActivity());
 						youtubeDownloader.setVariables();

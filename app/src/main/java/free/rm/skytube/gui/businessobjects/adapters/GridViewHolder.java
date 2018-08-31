@@ -251,7 +251,9 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 					case R.id.download_video:
 						if (youTubeVideo != null) {
 							if (youTubeVideo.isDownloaded(true)) {
-								new YoutubeDownloader(youTubeVideo,context).shareVideoWhatsApp(new File(youTubeVideo.getFileUri(true).getPath()));
+								new YoutubeDownloader(youTubeVideo,context);
+								YoutubeDownloader.videoFile = new File(youTubeVideo.getFileUri(true).getPath());
+								YoutubeDownloader.shareVideo();
 							} else {
 								YoutubeDownloader youtubeDownloader = new YoutubeDownloader(youTubeVideo,context);
 								youtubeDownloader.setVariables();
@@ -263,7 +265,9 @@ class GridViewHolder extends RecyclerView.ViewHolder {
 					case R.id.download_audio:
 						if (youTubeVideo != null) {
 							if (youTubeVideo.isDownloaded(false)) {
-								new YoutubeDownloader(youTubeVideo,context).shareVideoWhatsApp(new File(youTubeVideo.getFileUri(false).getPath()));
+								new YoutubeDownloader(youTubeVideo,context);
+								YoutubeDownloader.videoFile = new File(youTubeVideo.getFileUri(false).getPath());
+								YoutubeDownloader.shareVideo();
 							} else {
 								YoutubeDownloader youtubeDownloader = new YoutubeDownloader(youTubeVideo,context);
 								youtubeDownloader.setVariables();

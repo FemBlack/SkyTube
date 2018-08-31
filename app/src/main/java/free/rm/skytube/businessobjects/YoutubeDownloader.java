@@ -50,6 +50,7 @@ import at.huber.youtubeExtractor.YtFile;
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
+import free.rm.skytube.gui.dialog.ShareBottomDialog;
 import nl.bravobit.ffmpeg.ExecuteBinaryResponseHandler;
 import nl.bravobit.ffmpeg.FFmpeg;
 import nl.bravobit.ffmpeg.FFtask;
@@ -76,10 +77,12 @@ public class YoutubeDownloader  {
     public static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
     private Context context = null;
     private Handler handler = new Handler();
+    private static Context staticContext = null;
 
     public YoutubeDownloader(YouTubeVideo youTubeVideo,Context mContext) {
         this.youTubeVideo = youTubeVideo;
         this.context = mContext;
+        staticContext = mContext;
     }
 
     public void setVariables() {
@@ -577,8 +580,12 @@ public class YoutubeDownloader  {
 				String.format(getContext().getString(success ? R.string.video_downloaded : R.string.video_download_stream_error), youTubeVideo.getTitle()),
 				Toast.LENGTH_LONG).show();*/
 
-        shareVideoWhatsApp(localFile);
+        //shareVideoWhatsApp(localFile);
+        videoFile = localFile;
+        shareVideo();
     }
+
+    public static File videoFile;
 
     public void onExternalStorageNotAvailable() {
         Toast.makeText(getContext(),
@@ -586,7 +593,7 @@ public class YoutubeDownloader  {
                 Toast.LENGTH_LONG).show();
     }
 
-    public void shareVideoWhatsApp(File file) {
+    public static void shareVideoWhatsApp() {
 
         if(!appInstalledOrNot("com.whatsapp")){
             Toast.makeText(getContext(),
@@ -594,8 +601,8 @@ public class YoutubeDownloader  {
                     Toast.LENGTH_LONG).show();
         }else{
             Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
-                    ? FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
-                    : Uri.fromFile(file);
+                    ? FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", videoFile)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+                    : Uri.fromFile(videoFile);
 
             Intent videoshare = new Intent(Intent.ACTION_SEND);
             videoshare.setType("*/*");
@@ -604,12 +611,72 @@ public class YoutubeDownloader  {
             videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             videoshare.putExtra(Intent.EXTRA_STREAM,uri);
 
-            context.startActivity(videoshare);
+            getContext().startActivity(videoshare);
         }
     }
 
-    private boolean appInstalledOrNot(String uri) {
-        PackageManager pm = context.getPackageManager();
+    public static void shareVideoFacebook() {
+
+        if(!appInstalledOrNot("com.facebook.katana")){
+            Toast.makeText(getContext(),
+                    R.string.fb_install,
+                    Toast.LENGTH_LONG).show();
+        }else{
+            Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
+                    ? FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", videoFile)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+                    : Uri.fromFile(videoFile);
+
+            Intent videoshare = new Intent(Intent.ACTION_SEND);
+            videoshare.setType("*/*");
+            videoshare.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
+            videoshare.setPackage("com.facebook.katana");
+            videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            videoshare.putExtra(Intent.EXTRA_STREAM,uri);
+
+            getContext().startActivity(videoshare);
+        }
+    }
+
+    public static void shareVideoInstagram() {
+
+        if(!appInstalledOrNot("com.instagram.android")){
+            Toast.makeText(getContext(),
+                    R.string.instagram_install,
+                    Toast.LENGTH_LONG).show();
+        }else{
+            Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
+                    ? FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", videoFile)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+                    : Uri.fromFile(videoFile);
+
+            Intent videoshare = new Intent(Intent.ACTION_SEND);
+            videoshare.setType("*/*");
+            videoshare.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
+            videoshare.setPackage("com.instagram.android");
+            videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            videoshare.putExtra(Intent.EXTRA_STREAM,uri);
+
+            getContext().startActivity(videoshare);
+        }
+    }
+
+    public static void androidShare() {
+        Uri uri = (android.os.Build.VERSION.SDK_INT >= 24)
+                ? FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", videoFile)  // we now need to call FileProvider.getUriForFile() due to security changes in Android 7.0+
+                : Uri.fromFile(videoFile);
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
+        share.setType("video/*");
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        getContext().startActivity(share);
+    }
+    public static void shareVideo() {
+        final ShareBottomDialog dialog = new ShareBottomDialog(staticContext);
+        dialog.show();
+    }
+
+    private static boolean appInstalledOrNot(String uri) {
+        PackageManager pm = getContext().getPackageManager();
         boolean app_installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
