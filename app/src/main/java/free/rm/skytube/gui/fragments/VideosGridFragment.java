@@ -27,12 +27,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAdsManager;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
+import free.rm.skytube.gui.activities.MainActivity;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.adapters.VideoGridAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.BaseVideosGridFragment;
@@ -132,6 +134,14 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 
 	@Override
 	public void onRefresh() {
+		if (!MainActivity.isInternetIsConnected(getActivity())) {
+			new MaterialDialog.Builder(getActivity())
+					.content(R.string.no_internet)
+					.positiveText(R.string.ok)
+					.show();
+			return;
+		}
+
 		videoGridAdapter.refresh(true);
 	}
 

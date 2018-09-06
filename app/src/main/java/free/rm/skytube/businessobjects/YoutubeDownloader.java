@@ -611,7 +611,7 @@ public class YoutubeDownloader  {
             videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             videoshare.putExtra(Intent.EXTRA_STREAM,uri);
 
-            getContext().startActivity(videoshare);
+            staticContext.startActivity(videoshare);
         }
     }
 
@@ -627,13 +627,13 @@ public class YoutubeDownloader  {
                     : Uri.fromFile(videoFile);
 
             Intent videoshare = new Intent(Intent.ACTION_SEND);
-            videoshare.setType("*/*");
+            videoshare.setType("video/*");
             videoshare.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
             videoshare.setPackage("com.facebook.katana");
             videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             videoshare.putExtra(Intent.EXTRA_STREAM,uri);
 
-            getContext().startActivity(videoshare);
+            staticContext.startActivity(videoshare);
         }
     }
 
@@ -649,13 +649,13 @@ public class YoutubeDownloader  {
                     : Uri.fromFile(videoFile);
 
             Intent videoshare = new Intent(Intent.ACTION_SEND);
-            videoshare.setType("*/*");
+            videoshare.setType("video/*");
             videoshare.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
             videoshare.setPackage("com.instagram.android");
             videoshare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             videoshare.putExtra(Intent.EXTRA_STREAM,uri);
 
-            getContext().startActivity(videoshare);
+            staticContext.startActivity(videoshare);
         }
     }
 
@@ -668,7 +668,7 @@ public class YoutubeDownloader  {
         share.putExtra(Intent.EXTRA_TEXT, getStr(R.string.share_msg));
         share.setType("video/*");
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        getContext().startActivity(share);
+        staticContext.startActivity(share);
     }
     public static void shareVideo() {
         final ShareBottomDialog dialog = new ShareBottomDialog(staticContext);

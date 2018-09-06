@@ -47,6 +47,7 @@ import com.facebook.ads.Ad;
 import com.facebook.ads.AdChoicesView;
 import com.facebook.ads.AdError;
 import com.facebook.ads.AdIconView;
+import com.facebook.ads.InterstitialAdListener;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdListener;
@@ -109,12 +110,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 
 	public static final String LOGTAG = VideosGridFragment.class.getName();
 
+	private transient com.facebook.ads.InterstitialAd fbInterstitialAd;
+
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setTitle(R.string.app_name_vibe);
         displayPermissionsActivity();
+		loadFbAd();
 		// check for updates (one time only)
 		if (!updatesCheckerTaskRan) {
 			new UpdatesCheckerTask(this, false).executeInParallel();
@@ -203,6 +208,65 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 					.show();
 			return;
 		}
+
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (fbInterstitialAd != null) {
+			fbInterstitialAd.destroy();
+		}
+
+		super.onDestroy();
+	}
+
+	private void loadFbAd() {
+		fbInterstitialAd = new com.facebook.ads.InterstitialAd(this, "2363436417216774_2365567360337013");
+		// Set listeners for the Interstitial Ad
+		fbInterstitialAd.setAdListener(new InterstitialAdListener() {
+			@Override
+			public void onInterstitialDisplayed(Ad ad) {
+				// Interstitial ad displayed callback
+				//Log.e(TAG, "Interstitial ad displayed.");
+			}
+
+			@Override
+			public void onInterstitialDismissed(Ad ad) {
+				// Interstitial dismissed callback
+				//Log.e(TAG, "Interstitial ad dismissed.");
+			}
+
+			@Override
+			public void onError(Ad ad, AdError adError) {
+				// Ad error callback
+				//Log.e(TAG, "Interstitial ad failed to load: " + adError.getErrorMessage());
+			}
+
+			@Override
+			public void onAdLoaded(Ad ad) {
+				// Interstitial ad is loaded and ready to be displayed
+				//Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!");
+				// Show the ad
+				fbInterstitialAd.show();
+			}
+
+			@Override
+			public void onAdClicked(Ad ad) {
+				// Ad clicked callback
+				//Log.d(TAG, "Interstitial ad clicked!");
+			}
+
+			@Override
+			public void onLoggingImpression(Ad ad) {
+				// Ad impression logged callback
+				//Log.d(TAG, "Interstitial ad impression logged!");
+			}
+		});
+
+		// For auto play video ads, it's recommended to load the ad
+		// at least 30 seconds before it is shown
+		fbInterstitialAd.loadAd();
 	}
 
     public void displayPermissionsActivity() {

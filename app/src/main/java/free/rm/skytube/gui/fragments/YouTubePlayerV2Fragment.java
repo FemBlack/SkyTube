@@ -376,9 +376,14 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 						// hide the loading video view (progress bar)
 						loadingVideoView.setVisibility(View.GONE);
 
-						// play the video
-						Logger.i(this, ">> PLAYING: %s", desiredStream.getUri());
-						playVideo(desiredStream.getUri());
+						// Play the video.  Check if this fragment is visible before playing the
+						// video.  It might not be visible if the user clicked on the back button
+						// before the video streams are retrieved (such action would cause the app
+						// to crash if not catered for...).
+						if (isVisible()) {
+							Logger.i(YouTubePlayerV2Fragment.this, ">> PLAYING: %s", desiredStream.getUri());
+							playVideo(desiredStream.getUri());
+						}
 					}
 
 					@Override
@@ -430,14 +435,12 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 	private void playVideo(Uri videoUri) {
 		// Check if this fragment is visible before playing the video.  It might not be visible if
 		// the user clicked on the back button (and hence cancelling this operation)...
-		if (true) {
 			DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getContext(), "ST. Agent", new DefaultBandwidthMeter());
 			ExtractorMediaSource.Factory extMediaSourceFactory = new ExtractorMediaSource.Factory(dataSourceFactory);
 			ExtractorMediaSource mediaSource = extMediaSourceFactory.createMediaSource(videoUri);
 			player.prepare(mediaSource);
 			if (playerInitialPosition > 0)
 				player.seekTo(playerInitialPosition);
-		}
 	}
 
 

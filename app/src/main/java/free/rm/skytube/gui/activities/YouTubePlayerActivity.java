@@ -18,7 +18,6 @@
 package free.rm.skytube.gui.activities;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -26,8 +25,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import free.rm.skytube.R;
@@ -47,8 +44,6 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 
 	private FragmentEx videoPlayerFragment;
 	private YouTubePlayerFragmentInterface fragmentListener;
-	private static String NO_OF_AD_LAUNCH = "AD_LAUNCH_COUNT";
-	private static int adLaunchCount = 0;
 	private static InterstitialAd mInterstitialAd;
 
 	@Override
@@ -144,33 +139,5 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void saveLaunchCountToPreference() {
-		SharedPreferences.Editor editor = SkyTubeApp.getPreferenceManager().edit();
-		editor.putFloat(NO_OF_AD_LAUNCH, adLaunchCount);
-		editor.apply();
-	}
 
-	private void loadInterstitialAd() {
-		mInterstitialAd = new InterstitialAd(this);
-		mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-		mInterstitialAd.loadAd(new AdRequest.Builder().build());
-		mInterstitialAd.setAdListener(new AdListener() {
-			public void onAdLoaded() {
-				if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-					mInterstitialAd.show();
-				}
-			}
-
-			public void onAdClosed() {
-
-			}
-
-			public void onAdClicked() {
-			}
-
-			public void onAdFailedToLoad(int var1) {
-			}
-
-		});
-	}
 }

@@ -50,9 +50,7 @@ public class YouTubePlayer {
 		Intent i = new Intent(context, YouTubePlayerActivity.class);
 		i.putExtra(YouTubePlayerFragment.YOUTUBE_VIDEO_OBJ, youTubeVideo);
 		context.startActivity(i);
-		if (adLaunchCount >= 5) {
-			adLaunchCount = 0;
-			saveLaunchCountToPreference();
+		if (getLaunchCount() >= 3) {
 			loadInterstitialAd(context);
 
 		} else {
@@ -76,10 +74,13 @@ public class YouTubePlayer {
 
 	private static void saveLaunchCountToPreference() {
 		SharedPreferences.Editor editor = SkyTubeApp.getPreferenceManager().edit();
-		editor.putFloat(NO_OF_AD_LAUNCH, adLaunchCount);
+		editor.putInt(NO_OF_AD_LAUNCH, adLaunchCount);
 		editor.apply();
 	}
 
+	private static int getLaunchCount() {
+		return SkyTubeApp.getPreferenceManager().getInt(NO_OF_AD_LAUNCH,0);
+	}
 	private static void loadInterstitialAd(Context context) {
 		mInterstitialAd = new InterstitialAd(context);
 		mInterstitialAd.setAdUnitId(context.getString(R.string.interstitial_ad_unit_id));
@@ -105,6 +106,8 @@ public class YouTubePlayer {
 	public static void displayAd() {
 		if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
 			mInterstitialAd.show();
+			adLaunchCount = 0;
+			saveLaunchCountToPreference();
 		}
 	}
 
