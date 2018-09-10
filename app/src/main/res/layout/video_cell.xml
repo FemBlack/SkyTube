@@ -67,32 +67,46 @@
 			android:id="@+id/channel_text_view"
 			style="@style/GridDetailsTextView"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_marginBottom="20dp"
 			android:layout_marginStart="8dp"
 			android:layout_marginLeft="8dp"
-			android:layout_marginTop="8dp"
+			android:layout_gravity="center_vertical"
 			android:text="Channel"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent"/>
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"/>
+
+		<TextView
+			android:id="@+id/separator_text_view1"
+			style="@style/GridDetailsTextView"
+			android:layout_width="wrap_content"
+			android:layout_marginBottom="20dp"
+			android:layout_marginStart="8dp"
+			android:layout_marginLeft="8dp"
+			android:layout_gravity="center_vertical"
+			android:text="|"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toEndOf="@+id/channel_text_view"/>
 
 		<TextView
 			android:id="@+id/views_text_view"
 			style="@style/GridDetailsTextView"
 			android:layout_width="wrap_content"
-			android:layout_marginBottom="8dp"
+			android:layout_marginBottom="20dp"
 			android:layout_marginStart="8dp"
 			android:layout_marginLeft="8dp"
+			android:layout_gravity="center_vertical"
 			android:text="199 Views"
 			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintStart_toStartOf="parent"/>
+			app:layout_constraintStart_toEndOf="@+id/separator_text_view1"/>
 
 		<TextView
 			android:id="@+id/separator_text_view"
 			style="@style/GridDetailsTextView"
 			android:layout_width="wrap_content"
-			android:layout_marginBottom="8dp"
+			android:layout_marginBottom="20dp"
 			android:layout_marginStart="8dp"
 			android:layout_marginLeft="8dp"
+			android:layout_gravity="center_vertical"
 			android:text="|"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintStart_toEndOf="@+id/views_text_view"/>
@@ -101,9 +115,10 @@
 			android:id="@+id/publish_date_text_view"
 			style="@style/GridDetailsTextView"
 			android:layout_width="wrap_content"
-			android:layout_marginBottom="8dp"
+			android:layout_marginBottom="20dp"
 			android:layout_marginStart="8dp"
 			android:layout_marginLeft="8dp"
+			android:layout_gravity="center_vertical"
 			android:text="x days ago"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintStart_toEndOf="@+id/separator_text_view"/>

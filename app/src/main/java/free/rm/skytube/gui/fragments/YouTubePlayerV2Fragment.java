@@ -388,7 +388,7 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 
 					@Override
 					public void onGetDesiredStreamError(String errorMessage) {
-						if (errorMessage != null) {
+						if (errorMessage != null && getContext() != null) {
 							new AlertDialog.Builder(getContext())
 											.setMessage(errorMessage)
 											.setTitle(R.string.error_video_play)

@@ -45,6 +45,7 @@ import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeChannel;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.YouTube.Tasks.GetYouTubeChannelInfoTask;
+import free.rm.skytube.gui.activities.MainActivity;
 import free.rm.skytube.gui.businessobjects.SubscribeButton;
 import free.rm.skytube.gui.businessobjects.adapters.SubsAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.FragmentEx;
@@ -112,10 +113,12 @@ public class ChannelBrowserFragment extends FragmentEx {
 		// inflate the layout for this fragment
 		View fragment = inflater.inflate(R.layout.fragment_channel_browser, container, false);
 
-		mAdView = fragment.findViewById(R.id.adView);
-		AdRequest.Builder adRequest = new AdRequest.Builder();
-		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
-		mAdView.loadAd(adRequest.build());
+		if (!MainActivity.isPurchased) {
+			mAdView = fragment.findViewById(R.id.adView);
+			AdRequest.Builder adRequest = new AdRequest.Builder();
+			//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+			mAdView.loadAd(adRequest.build());
+		}
 
 		viewPager = fragment.findViewById(R.id.pager);
 
@@ -332,13 +335,17 @@ public class ChannelBrowserFragment extends FragmentEx {
 
 	@Override
 	public void onPause() {
-		mAdView.pause();
+		if (mAdView != null) {
+			mAdView.pause();
+		}
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mAdView.resume();
+		if (mAdView != null) {
+			mAdView.resume();
+		}
 	}
 }

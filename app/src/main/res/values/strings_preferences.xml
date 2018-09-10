@@ -529,6 +529,7 @@
 		VIDEO BLOCKER
 	-->
 	<string name="pref_video_blocker_category">Video Blocker</string>
+	<string name="pref_gift">Support Developer</string>
 	<string name="pref_channels_filter_category">Channels Filters</string>
 
 	<string name="pref_key_channel_filter_method" translatable="false">pref_key_channel_filter_method</string>

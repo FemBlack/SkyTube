@@ -176,7 +176,13 @@ public class YouTubeVideo implements Serializable {
 			setThumbsUpPercentage(likeCount, dislikeCount);
 
 			this.viewsCountInt = video.getStatistics().getViewCount();
-			this.viewsCount = String.format(getStr(R.string.views), viewsCountInt);
+			if (this.viewsCountInt != null) {
+				boolean b = this.viewsCountInt.compareTo(new BigInteger("1000")) == 1;
+				//this.viewsCount = String.format((b ? "K " + getStr(R.string.views) : getStr(R.string.views)), (b ? (this.viewsCountInt.divide(new BigInteger("1000"))) :  this.viewsCountInt));
+				this.viewsCount = b ? (this.viewsCountInt.divide(new BigInteger("1000")) + "K " + getStr(R.string.views)) : this.viewsCountInt + getStr(R.string.views);
+			} else {
+				this.viewsCount = "0 " + getStr(R.string.views);
+			}
 
 			if (likeCount != null)
 				this.likeCount = String.format(Locale.getDefault(), "%,d", video.getStatistics().getLikeCount());

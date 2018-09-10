@@ -19,7 +19,6 @@ package free.rm.skytube.gui.businessobjects;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.google.android.gms.ads.AdListener;
@@ -27,8 +26,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import free.rm.skytube.R;
-import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
+import free.rm.skytube.gui.activities.MainActivity;
 import free.rm.skytube.gui.activities.YouTubePlayerActivity;
 import free.rm.skytube.gui.fragments.YouTubePlayerFragment;
 
@@ -50,12 +49,15 @@ public class YouTubePlayer {
 		Intent i = new Intent(context, YouTubePlayerActivity.class);
 		i.putExtra(YouTubePlayerFragment.YOUTUBE_VIDEO_OBJ, youTubeVideo);
 		context.startActivity(i);
-		if (getLaunchCount() >= 3) {
+		/*if (getLaunchCount() >= 3) {
 			loadInterstitialAd(context);
 
 		} else {
 			adLaunchCount++;
 			saveLaunchCountToPreference();
+		}*/
+		if (!MainActivity.isPurchased) {
+			loadInterstitialAd(context);
 		}
 	}
 
@@ -72,7 +74,7 @@ public class YouTubePlayer {
 		context.startActivity(i);
 	}
 
-	private static void saveLaunchCountToPreference() {
+	/*private static void saveLaunchCountToPreference() {
 		SharedPreferences.Editor editor = SkyTubeApp.getPreferenceManager().edit();
 		editor.putInt(NO_OF_AD_LAUNCH, adLaunchCount);
 		editor.apply();
@@ -80,7 +82,7 @@ public class YouTubePlayer {
 
 	private static int getLaunchCount() {
 		return SkyTubeApp.getPreferenceManager().getInt(NO_OF_AD_LAUNCH,0);
-	}
+	}*/
 	private static void loadInterstitialAd(Context context) {
 		mInterstitialAd = new InterstitialAd(context);
 		mInterstitialAd.setAdUnitId(context.getString(R.string.interstitial_ad_unit_id));
@@ -106,8 +108,8 @@ public class YouTubePlayer {
 	public static void displayAd() {
 		if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
 			mInterstitialAd.show();
-			adLaunchCount = 0;
-			saveLaunchCountToPreference();
+			/*adLaunchCount = 0;
+			saveLaunchCountToPreference();*/
 		}
 	}
 

@@ -25,7 +25,6 @@ import com.google.api.services.youtube.model.ChannelSnippet;
 import com.google.api.services.youtube.model.ChannelStatistics;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.util.List;
 import free.rm.skytube.R;
 import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.Logger;
-import free.rm.skytube.businessobjects.YouTube.VideoBlocker;
 import free.rm.skytube.businessobjects.db.ChannelFilteringDb;
 import free.rm.skytube.businessobjects.db.SubscriptionsDb;
 import free.rm.skytube.businessobjects.db.Tasks.SubscribeToChannelTask;
@@ -242,13 +240,13 @@ public class YouTubeChannel implements Serializable {
 			new SubscribeToChannelTask(this).executeInParallel();
 		}
 
-		if (VideoBlocker.isChannelBlacklistEnabled()) {
+		/*if (VideoBlocker.isChannelBlacklistEnabled()) {
 			success = blacklistChannel(displayToastMessage);
 		} else {
 			success = unwhitelistChannel(displayToastMessage);
-		}
+		}*/
 
-		return success;
+		return true;
 	}
 
 

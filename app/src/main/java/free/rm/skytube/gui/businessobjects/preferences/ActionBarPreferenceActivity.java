@@ -45,7 +45,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.jetbrains.annotations.NotNull;
 
 import free.rm.skytube.R;
 
@@ -95,7 +94,6 @@ public class ActionBarPreferenceActivity extends PreferenceActivity {
 		}
 	}
 
-	@NotNull
 	@Override
 	public MenuInflater getMenuInflater() {
 		return getDelegate().getMenuInflater();

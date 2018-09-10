@@ -34,6 +34,7 @@ import com.google.android.gms.ads.AdView;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
+import free.rm.skytube.gui.activities.MainActivity;
 
 /**
  * Fragment that will hold a list of videos corresponding to the user's query.
@@ -73,11 +74,13 @@ public class SearchVideoGridFragment extends VideosGridFragment {
 
 		// the app will call onCreateOptionsMenu() for when the user wants to search
 		setHasOptionsMenu(true);
-
-		mAdView = view.findViewById(R.id.adView);
-		AdRequest.Builder adRequest = new AdRequest.Builder();
-		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
-		mAdView.loadAd(adRequest.build());
+		if (!MainActivity.isPurchased) {
+			mAdView = view.findViewById(R.id.adView);
+			mAdView.setVisibility(View.VISIBLE);
+			AdRequest.Builder adRequest = new AdRequest.Builder();
+			//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+			mAdView.loadAd(adRequest.build());
+		}
 
 
 		return view;
@@ -135,14 +138,18 @@ public class SearchVideoGridFragment extends VideosGridFragment {
 
 	@Override
 	public void onPause() {
-		mAdView.pause();
+		if (mAdView != null) {
+			mAdView.pause();
+		}
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mAdView.resume();
+		if (mAdView != null) {
+			mAdView.resume();
+		}
 	}
 
 

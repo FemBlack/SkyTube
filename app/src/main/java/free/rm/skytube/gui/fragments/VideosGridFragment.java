@@ -52,10 +52,12 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 		// inflate the layout for this fragment
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 
-		String placement_id = "2363436417216774_2363439160549833";
-		mNativeAdsManager = new NativeAdsManager(getActivity(), placement_id, 5);
-		mNativeAdsManager.loadAds();
-		mNativeAdsManager.setListener(this);
+		if (!MainActivity.isPurchased) {
+			String placement_id = "2363436417216774_2363439160549833";
+			mNativeAdsManager = new NativeAdsManager(getActivity(), placement_id, 5);
+			mNativeAdsManager.loadAds();
+			mNativeAdsManager.setListener(this);
+		}
 
 		// setup the video grid view
 		gridView = view.findViewById(R.id.grid_view);
@@ -84,13 +86,15 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 			return;
 		}
 
-		final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns));
-		gridView.setLayoutManager(gridLayoutManager);
-		DividerItemDecoration itemDecoration =
-				new DividerItemDecoration(getActivity(), gridLayoutManager.getOrientation());
-		itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
-		gridView.addItemDecoration(itemDecoration);
-		gridView.setAdapter(videoGridAdapter);
+		if (!MainActivity.isPurchased) {
+			final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns));
+			gridView.setLayoutManager(gridLayoutManager);
+			DividerItemDecoration itemDecoration =
+					new DividerItemDecoration(getActivity(), gridLayoutManager.getOrientation());
+			itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
+			gridView.addItemDecoration(itemDecoration);
+			gridView.setAdapter(videoGridAdapter);
+		}
 		//videoGridAdapter.notifyDataSetChanged();
 	}
 

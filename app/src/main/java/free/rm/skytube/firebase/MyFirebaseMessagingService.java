@@ -46,9 +46,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            String body = remoteMessage.getNotification().getBody();
-            Log.d(TAG, "Message Notification Body: " + body);
-            sendNotification(body);
+            sendNotification(remoteMessage.getNotification());
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -58,9 +56,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param messageBody FCM message body received.
+     * @param remoteMessage FCM message body received.
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(RemoteMessage.Notification remoteMessage) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -71,8 +69,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("FCM Message")
-                        .setContentText(messageBody)
+                        .setContentTitle(remoteMessage.getTitle())
+                        .setContentText(remoteMessage.getBody())
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);

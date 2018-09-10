@@ -10,16 +10,20 @@ android {
         minSdkVersion 16
         targetSdkVersion 28
 
-        versionName "35"    // digits of the *fractional part* shall NOT be > than "9"
-        versionCode 35
+        versionName "41"    // digits of the *fractional part* shall NOT be > than "9"
+        versionCode 41
+
+        resConfigs "en"
 
         // Third party devs:  pls be ethical and change the below keys
-        buildConfigField 'String',   'YOUTUBE_API_KEYS_DEBUG', '"AIzaSyAeZjb7pz0RgGrLZ3Bh7vJb6ydQTlJ4Ooo"'
+        buildConfigField 'String',   'YOUTUBE_API_KEYS_DEBUG', '"AIzaSyBChHoRcQ9UTIlryuriZX0eIgMOaWPZSyU"'
         buildConfigField 'String[]', 'YOUTUBE_API_KEYS',
                 '{' +
                         '"AIzaSyB8nI7Xy5bCDdlwxCJyis7G0UvxaWBz_as",' +
                         '"AIzaSyByqwmOCld80LjSb45LOxBzru9IzDhy4_E",' +
-                        '"AIzaSyAeZjb7pz0RgGrLZ3Bh7vJb6ydQTlJ4Ooo"'  +
+                        '"AIzaSyA6ja6D8iacQvFKD8PvtLvorNr3KWqBjJU",' +
+                        '"AIzaSyAeZjb7pz0RgGrLZ3Bh7vJb6ydQTlJ4Ooo",' +
+                        '"AIzaSyBChHoRcQ9UTIlryuriZX0eIgMOaWPZSyU"'  +
                         '}'
         buildConfigField 'String', 'SKYTUBE_WEBSITE',         '"http://skytube-app.com"'
         buildConfigField 'String', 'SKYTUBE_WEBSITE_CREDITS', '"http://skytube-app.com/credits.html"'
@@ -47,22 +51,22 @@ android {
             }*/
 
             // Arm Apk
-            /*aaptOptions {
+            aaptOptions {
                 ignoreAssetsPattern "!*ffprobe:!x86"
-            }*/
+            }
 
             // x86 Apk
-             aaptOptions {
+             /*aaptOptions {
                  ignoreAssetsPattern "!*ffprobe:!arm:"
-             }
+             }*/
         }
     }
 
-    externalNativeBuild {
+   /* externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
         }
-    }
+    }*/
     flavorDimensions "skytube"
     productFlavors {
         // 100% Open-Source Edition
@@ -72,9 +76,9 @@ android {
             resValue "string", "app_name", "Vibe"
             /* versionCode 23
              versionName "23"*/
-            ndk {
+            /*ndk {
                 abiFilter 'armeabi-v7a'
-            }
+            }*/
         }
 
         ossWithx86 {
@@ -82,9 +86,9 @@ android {
             resValue "string", "app_name", "Vibe"
             versionCode 36
             versionName "36"
-            ndk {
+            /*ndk {
                 abiFilter 'x86'
-            }
+            }*/
         }
 
         ossFullAPk {
@@ -123,7 +127,7 @@ dependencies {
     implementation ('com.google.apis:google-api-services-youtube:v3-rev187-1.23.0'){
         exclude module: 'guava-jdk5'
     }
-    implementation 'com.github.TeamNewPipe:NewPipeExtractor:v0.11.5'
+    implementation 'com.github.TeamNewPipe:NewPipeExtractor:66c3c3f45241d4b0c909'
     // other modules
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     implementation 'com.github.moraisigor:slidingdrawer:1.6.7'
@@ -136,9 +140,9 @@ dependencies {
     implementation 'com.github.angads25:filepicker:1.1.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
     implementation 'com.klinkerapps:link_builder:1.6.1'
-    implementation('com.optimaize.languagedetector:language-detector:0.6') {
+    /*implementation('com.optimaize.languagedetector:language-detector:0.6') {
         exclude group: 'com.google.guava', module: 'guava'
-    }
+    }*/
     implementation 'com.mikepenz:actionitembadge:3.3.2@aar'
     /*implementation 'com.mikepenz:iconics-core:3.0.3@aar'*/
     // Android support modules
@@ -165,12 +169,12 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.facebook.android:audience-network-sdk:4.99.3'
     implementation 'com.google.firebase:firebase-core:16.0.3'
-    implementation 'com.google.firebase:firebase-messaging:17.3.0'
+    implementation 'com.google.firebase:firebase-messaging:17.3.1'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
     implementation ('com.google.firebase:firebase-inappmessaging-display:17.0.1')
     // https://mvnrepository.com/artifact/com.google.guava/guava
     //implementation group: 'com.google.guava', name: 'guava', version: '26.0-android'
-
+    implementation project(':IAP')
 }
 
 configurations {

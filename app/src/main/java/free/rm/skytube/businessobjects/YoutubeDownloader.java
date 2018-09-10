@@ -61,6 +61,7 @@ import static free.rm.skytube.app.SkyTubeApp.getStr;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.AUDIO;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.UNDERSCORE;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.VIDEO;
+import static free.rm.skytube.gui.activities.MainActivity.isPurchased;
 
 public class YoutubeDownloader  {
 
@@ -263,16 +264,65 @@ public class YoutubeDownloader  {
                 nativeAdIcon,
                 clickableViews);
     }
-
+    private TextView textView;
+    private  com.facebook.ads.InterstitialAd fbInterstitialAd;
     // DownloadFile AsyncTask
     private class DownloadFile extends AsyncTask<YtFile, Integer, String> {
 
         MaterialDialog md;
         ProgressBar progressBar;
         private int progressStatus = 0;
-        private TextView textView;
+
         private File file;
         boolean mkdirs;
+
+       /* private void loadFbAd() {
+            fbInterstitialAd = new com.facebook.ads.InterstitialAd(context, "2363436417216774_2365567360337013");
+            // Set listeners for the Interstitial Ad
+            fbInterstitialAd.setAdListener(new InterstitialAdListener() {
+                @Override
+                public void onInterstitialDisplayed(Ad ad) {
+                    // Interstitial ad displayed callback
+                    //Log.e(TAG, "Interstitial ad displayed.");
+                }
+
+                @Override
+                public void onInterstitialDismissed(Ad ad) {
+                    // Interstitial dismissed callback
+                    //Log.e(TAG, "Interstitial ad dismissed.");
+                }
+
+                @Override
+                public void onError(Ad ad, AdError adError) {
+                    // Ad error callback
+                    //Log.e(TAG, "Interstitial ad failed to load: " + adError.getErrorMessage());
+                }
+
+                @Override
+                public void onAdLoaded(Ad ad) {
+                    // Interstitial ad is loaded and ready to be displayed
+                    //Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!");
+                    // Show the ad
+                    //fbInterstitialAd.show();
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+                    // Ad clicked callback
+                    //Log.d(TAG, "Interstitial ad clicked!");
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+                    // Ad impression logged callback
+                    //Log.d(TAG, "Interstitial ad impression logged!");
+                }
+            });
+
+            // For auto play video ads, it's recommended to load the ad
+            // at least 30 seconds before it is shown
+            fbInterstitialAd.loadAd();
+        }*/
 
         @Override
         protected void onPreExecute() {
@@ -285,7 +335,11 @@ public class YoutubeDownloader  {
             progressBar.setMax(100);
             textView = (TextView) md.findViewById(R.id.textView);
             progressStatus += 1;
-            loadNativeAd(md);
+            if (!isPurchased) {
+                loadNativeAd(md);
+                //loadFbAd();
+            }
+
             md.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
@@ -293,6 +347,23 @@ public class YoutubeDownloader  {
                         nativeAd.unregisterView();
                         nativeAd.destroy();
                     }
+                    /*if (fbInterstitialAd != null && fbInterstitialAd.isAdLoaded()) {
+                        fbInterstitialAd.show();
+
+                    }*/
+                }
+            });
+            md.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    if (nativeAd != null) {
+                        nativeAd.unregisterView();
+                        nativeAd.destroy();
+                    }
+                    /*if (fbInterstitialAd != null && fbInterstitialAd.isAdLoaded()) {
+                        fbInterstitialAd.show();
+
+                    }*/
                 }
             });
             md.show();
@@ -391,6 +462,7 @@ public class YoutubeDownloader  {
                 textView.setText(R.string.process_Audio_Image);
                 downloadThumbnailImage(file);
             }else {
+                //textView.setTextColor(context.getResources().getColor(R.color.skytube_theme_colour));
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -582,6 +654,8 @@ public class YoutubeDownloader  {
 
         //shareVideoWhatsApp(localFile);
         videoFile = localFile;
+        textView.setText(R.string.downloaded);
+        textView.setTextColor(context.getResources().getColor(R.color.skytube_theme_colour));
         shareVideo();
     }
 

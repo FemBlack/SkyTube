@@ -44,6 +44,7 @@ import free.rm.skytube.businessobjects.YouTube.GetYouTubeVideos;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeChannel;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.YouTube.Tasks.GetYouTubeVideosTask;
+import free.rm.skytube.gui.activities.MainActivity;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 
 /**
@@ -172,7 +173,7 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
 	public GridViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
 
-		if (viewType == AD_TYPE) {
+		if (!MainActivity.isPurchased && viewType == AD_TYPE) {
 			View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout
 					.native_ad_layout_facebook, parent, false);
 			return new AdHolder(inflatedView);
@@ -234,7 +235,7 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
 
 	@Override
 	public void onBindViewHolder(GridViewHolder viewHolder, int position) {
-        if (viewHolder.getItemViewType() == AD_TYPE) {
+        if (!MainActivity.isPurchased && viewHolder.getItemViewType() == AD_TYPE) {
             NativeAd ad;
 
             if (mAdItems.size() > position / AD_DISPLAY_FREQUENCY) {
@@ -273,9 +274,13 @@ public class VideoGridAdapter extends RecyclerViewAdapterEx<YouTubeVideo, GridVi
         } else {
 
             if (viewHolder != null) {
-                //Calculate where the next postItem index is by subtracting ads we've shown.
-				int index = position - (position / AD_DISPLAY_FREQUENCY) - 1;
-                viewHolder.updateInfo(get(index), getContext(), listener);
+				if (!MainActivity.isPurchased) {
+					//Calculate where the next postItem index is by subtracting ads we've shown.
+					int index = position - (position / AD_DISPLAY_FREQUENCY) - 1;
+					viewHolder.updateInfo(get(index), getContext(), listener);
+				} else {
+					viewHolder.updateInfo(get(position), getContext(), listener);
+				}
             }
 
             // if it reached the bottom of the list, then try to get the next page of videos

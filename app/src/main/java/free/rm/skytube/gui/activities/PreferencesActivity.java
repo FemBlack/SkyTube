@@ -48,6 +48,7 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 		LinearLayout layout = new LinearLayout(this);
 		layout.setOrientation(LinearLayout.VERTICAL);
 
+		if (!MainActivity.isPurchased) {
 		// Create a banner ad
 		AdView mAdView = new AdView(this);
 		mAdView.setAdSize(AdSize.SMART_BANNER);
@@ -62,6 +63,7 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 		// Start loading the ad.
 		mAdView.loadAd(adRequestBuilder.build());
 		v.addFooterView(layout);
+		}
 	}
 
 	@Override

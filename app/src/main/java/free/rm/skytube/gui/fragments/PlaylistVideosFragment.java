@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubePlaylist;
+import free.rm.skytube.gui.activities.MainActivity;
 
 /**
  * A Fragment that displays the videos of a playlist in a {@link VideosGridFragment}
@@ -72,9 +73,11 @@ public class PlaylistVideosFragment extends VideosGridFragment {
 				.apply(new RequestOptions().placeholder(R.drawable.banner_default))
 				.into(playlistBannerImageView);
 
-		AdRequest.Builder adRequest = new AdRequest.Builder();
-		//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
-		mAdView.loadAd(adRequest.build());
+		if (!MainActivity.isPurchased) {
+			AdRequest.Builder adRequest = new AdRequest.Builder();
+			//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
+			mAdView.loadAd(adRequest.build());
+		}
 
 		return view;
 	}
@@ -104,14 +107,18 @@ public class PlaylistVideosFragment extends VideosGridFragment {
 
 	@Override
 	public void onPause() {
-		mAdView.pause();
+		if (mAdView != null) {
+			mAdView.pause();
+		}
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mAdView.resume();
+		if (mAdView != null) {
+			mAdView.resume();
+		}
 	}
 
 }
