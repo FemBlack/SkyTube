@@ -87,6 +87,7 @@ public class ChannelBrowserFragment extends FragmentEx {
 	private ChannelPagerAdapter channelPagerAdapter;
 	private ViewPager viewPager;
 	private AdView mAdView;
+	FragmentManager                 childFragMang;
 
 
 	@Override
@@ -112,7 +113,7 @@ public class ChannelBrowserFragment extends FragmentEx {
 
 		// inflate the layout for this fragment
 		View fragment = inflater.inflate(R.layout.fragment_channel_browser, container, false);
-
+		childFragMang= getChildFragmentManager();
 		if (!MainActivity.isPurchased) {
 			mAdView = fragment.findViewById(R.id.adView);
 			AdRequest.Builder adRequest = new AdRequest.Builder();
@@ -194,9 +195,9 @@ public class ChannelBrowserFragment extends FragmentEx {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if(channelVideosFragment != null)
+		if(channelVideosFragment != null && channelVideosFragment.isAdded())
 			getChildFragmentManager().putFragment(outState, FRAGMENT_CHANNEL_VIDEOS, channelVideosFragment);
-		if(channelPlaylistsFragment != null)
+		if(channelPlaylistsFragment != null && channelPlaylistsFragment.isAdded())
 			getChildFragmentManager().putFragment(outState, FRAGMENT_CHANNEL_PLAYLISTS, channelPlaylistsFragment);
 	}
 
@@ -204,8 +205,8 @@ public class ChannelBrowserFragment extends FragmentEx {
 	 * Initialise views that are related to {@link #channel}.
 	 */
 	private void initViews() {
-		if (channel != null) {
-			channelPagerAdapter = new ChannelPagerAdapter(getChildFragmentManager());
+		if (channel != null && childFragMang!= null) {
+			channelPagerAdapter = new ChannelPagerAdapter(childFragMang);
 			viewPager.setOffscreenPageLimit(2);
 			viewPager.setAdapter(channelPagerAdapter);
 

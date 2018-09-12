@@ -285,7 +285,7 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		commentsDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 			@Override
 			public void onDrawerOpened() {
-				if (commentsAdapter == null) {
+				if (commentsAdapter == null && youTubeVideo != null) {
 					commentsAdapter = new CommentsAdapter(getActivity(), youTubeVideo.getId(), commentsExpandableListView, commentsProgressBar, noVideoCommentsView);
 				}
 			}
@@ -934,7 +934,7 @@ public class YouTubePlayerV2Fragment extends ImmersiveModeFragment implements Yo
 		protected void onPostExecute(YouTubeVideo youTubeVideo) {
 			if (youTubeVideo == null) {
 				// invalid URL error (i.e. we are unable to decode the URL)
-				String err = String.format(getString(R.string.error_invalid_url), videoUrl);
+				String err = String.format("Invalid video URL: %s", videoUrl);
 				Toast.makeText(getActivity(), err, Toast.LENGTH_LONG).show();
 
 				// log error

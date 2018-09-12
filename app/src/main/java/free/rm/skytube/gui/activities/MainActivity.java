@@ -500,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 				displayEnterVideoUrlDialog();
 				return true;
             case R.id.menu_gift:
-                if (mRewardedVideoAd.isLoaded()) {
+                if (mRewardedVideoAd != null && mRewardedVideoAd.isLoaded()) {
                     mRewardedVideoAd.show();
                 }
                 return true;

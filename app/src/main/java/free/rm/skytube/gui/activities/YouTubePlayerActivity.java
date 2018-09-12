@@ -124,7 +124,9 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 
 	@Override
 	public void onBackPressed() {
-		fragmentListener.videoPlaybackStopped();
+		if (fragmentListener != null) {
+			fragmentListener.videoPlaybackStopped();
+		}
 		super.onBackPressed();
 		if (!MainActivity.isPurchased) {
 			YouTubePlayer.displayAd();
