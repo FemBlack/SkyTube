@@ -128,7 +128,7 @@ public class YouTubePlayerActivity extends BackButtonActivity {
 			fragmentListener.videoPlaybackStopped();
 		}
 		super.onBackPressed();
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			YouTubePlayer.displayAd();
 		}
 

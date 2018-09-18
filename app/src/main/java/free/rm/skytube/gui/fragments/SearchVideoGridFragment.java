@@ -34,7 +34,7 @@ import com.google.android.gms.ads.AdView;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
-import free.rm.skytube.gui.activities.MainActivity;
+import free.rm.skytube.gui.activities.AppLaunchActivity;
 
 /**
  * Fragment that will hold a list of videos corresponding to the user's query.
@@ -74,7 +74,7 @@ public class SearchVideoGridFragment extends VideosGridFragment {
 
 		// the app will call onCreateOptionsMenu() for when the user wants to search
 		setHasOptionsMenu(true);
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			mAdView = view.findViewById(R.id.adView);
 			mAdView.setVisibility(View.VISIBLE);
 			AdRequest.Builder adRequest = new AdRequest.Builder();

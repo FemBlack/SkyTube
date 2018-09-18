@@ -45,7 +45,7 @@ import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeChannel;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
 import free.rm.skytube.businessobjects.YouTube.Tasks.GetYouTubeChannelInfoTask;
-import free.rm.skytube.gui.activities.MainActivity;
+import free.rm.skytube.gui.activities.AppLaunchActivity;
 import free.rm.skytube.gui.businessobjects.SubscribeButton;
 import free.rm.skytube.gui.businessobjects.adapters.SubsAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.FragmentEx;
@@ -114,7 +114,7 @@ public class ChannelBrowserFragment extends FragmentEx {
 		// inflate the layout for this fragment
 		View fragment = inflater.inflate(R.layout.fragment_channel_browser, container, false);
 		childFragMang= getChildFragmentManager();
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			mAdView = fragment.findViewById(R.id.adView);
 			AdRequest.Builder adRequest = new AdRequest.Builder();
 			//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");

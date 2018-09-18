@@ -34,7 +34,7 @@ import com.facebook.ads.NativeAdsManager;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
-import free.rm.skytube.gui.activities.MainActivity;
+import free.rm.skytube.gui.activities.AppLaunchActivity;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.adapters.VideoGridAdapter;
 import free.rm.skytube.gui.businessobjects.fragments.BaseVideosGridFragment;
@@ -52,7 +52,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 		// inflate the layout for this fragment
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			String placement_id = "2363436417216774_2363439160549833";
 			mNativeAdsManager = new NativeAdsManager(getActivity(), placement_id, 5);
 			mNativeAdsManager.loadAds();
@@ -86,7 +86,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 			return;
 		}
 
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.video_grid_num_columns));
 			gridView.setLayoutManager(gridLayoutManager);
 			DividerItemDecoration itemDecoration =
@@ -138,7 +138,7 @@ public abstract class VideosGridFragment extends BaseVideosGridFragment implemen
 
 	@Override
 	public void onRefresh() {
-		if (!MainActivity.isInternetIsConnected(getActivity())) {
+		if (!AppLaunchActivity.isInternetIsConnected(getActivity())) {
 			new MaterialDialog.Builder(getActivity())
 					.content(R.string.no_internet)
 					.positiveText(R.string.ok)

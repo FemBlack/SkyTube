@@ -22,18 +22,6 @@
 # $ANDROID_HOME/tools/proguard/proguard-android.txt
 
 # Keep public classes and methods.
--keepclassmembers class com.mopub.** { public *; }
--keep public class com.mopub.**
--keep public class android.webkit.JavascriptInterface {}
-
-# Explicitly keep any custom event classes in any package.
--keep class * extends com.mopub.mobileads.CustomEventBanner {}
--keep class * extends com.mopub.mobileads.CustomEventInterstitial {}
--keep class * extends com.mopub.nativeads.CustomEventNative {}
--keep class * extends com.mopub.nativeads.CustomEventRewardedAd {}
-
-# Keep methods that are accessed via reflection
--keepclassmembers class ** { @com.mopub.common.util.ReflectionTarget *; }
 
 # Support for Android Advertiser ID.
 -keep class com.google.android.gms.common.GooglePlayServicesUtil {*;}
@@ -65,5 +53,8 @@
   **[] $VALUES;
   public *;
 }
+
+
+
 
 

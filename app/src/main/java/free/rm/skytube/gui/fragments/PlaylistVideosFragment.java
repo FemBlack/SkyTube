@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.VideoCategory;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubePlaylist;
-import free.rm.skytube.gui.activities.MainActivity;
+import free.rm.skytube.gui.activities.AppLaunchActivity;
 
 /**
  * A Fragment that displays the videos of a playlist in a {@link VideosGridFragment}
@@ -73,7 +73,7 @@ public class PlaylistVideosFragment extends VideosGridFragment {
 				.apply(new RequestOptions().placeholder(R.drawable.banner_default))
 				.into(playlistBannerImageView);
 
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			AdRequest.Builder adRequest = new AdRequest.Builder();
 			//adRequest.addTestDevice("C284D5A398D80F7CE733BAAC7372C233");
 			mAdView.loadAd(adRequest.build());

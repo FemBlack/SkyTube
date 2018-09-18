@@ -27,7 +27,7 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import free.rm.skytube.R;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeVideo;
-import free.rm.skytube.gui.activities.MainActivity;
+import free.rm.skytube.gui.activities.AppLaunchActivity;
 import free.rm.skytube.gui.activities.YouTubePlayerActivity;
 import free.rm.skytube.gui.fragments.YouTubePlayerFragment;
 
@@ -56,7 +56,7 @@ public class YouTubePlayer {
 			adLaunchCount++;
 			saveLaunchCountToPreference();
 		}*/
-		if (!MainActivity.isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			loadInterstitialAd(context);
 		}
 	}

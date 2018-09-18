@@ -20,16 +20,10 @@ package free.rm.skytube.gui.activities;
 import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -46,10 +40,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.vending.billing.IInAppBillingService;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdChoicesView;
 import com.facebook.ads.AdError;
@@ -77,17 +69,16 @@ import free.rm.skytube.app.SkyTubeApp;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubeChannel;
 import free.rm.skytube.businessobjects.YouTube.POJOs.YouTubePlaylist;
 import free.rm.skytube.businessobjects.db.DownloadedVideosDb;
-import free.rm.skytube.businessobjects.db.MySQLiteHelper;
 import free.rm.skytube.gui.businessobjects.MainActivityListener;
 import free.rm.skytube.gui.businessobjects.YouTubePlayer;
 import free.rm.skytube.gui.businessobjects.updates.UpdatesCheckerTask;
+import free.rm.skytube.gui.dialog.VibeShareBottomDialog;
 import free.rm.skytube.gui.fragments.ChannelBrowserFragment;
 import free.rm.skytube.gui.fragments.MainFragment;
 import free.rm.skytube.gui.fragments.PlaylistVideosFragment;
 import free.rm.skytube.gui.fragments.SearchVideoGridFragment;
 import free.rm.skytube.gui.fragments.VideosGridFragment;
 import free.rm.skytube.iap.DonationFragment;
-import free.rm.skytube.iap.DonationItems;
 import ind.riaz.iap.DialogHelper;
 import timber.log.Timber;
 
@@ -135,13 +126,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		staticContext = this;
-		db = MySQLiteHelper.getInstance(this);
 		setTitle(R.string.app_name_vibe);
         displayPermissionsActivity();
-		isPurchased = inAppPurchaseVerification();
-		if (!isPurchased) {
-			loadFbAd();
-		}
+
+		//AppLaunchActivity.isPurchased = inAppPurchaseVerification();
 
 		// check for updates (one time only)
 		if (!updatesCheckerTaskRan) {
@@ -197,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 			this.videoBlockerPlugin = new VideoBlockerPlugin(this);
 		}*/
 
-		if (!isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			mInterstitialAd = new InterstitialAd(this);
 			mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 			mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -226,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 			});
 		}
 
-		if (!isInternetIsConnected(this)) {
+		if (!AppLaunchActivity.isInternetIsConnected(this)) {
 			new MaterialDialog.Builder(this)
 					.content(R.string.no_internet)
 					.positiveText(R.string.ok)
@@ -235,6 +223,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		}
 
         loadRewardedVideo();
+
+		/*if (!AppLaunchActivity.isPurchased) {
+			loadFbAd();
+		}*/
 
 	}
 
@@ -291,19 +283,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 
 	@Override
 	protected void onDestroy() {
-		if (fbInterstitialAd != null) {
+		/*if (fbInterstitialAd != null) {
 			fbInterstitialAd.destroy();
-		}
-
-		if (mService != null) {
-			unbindService(mServiceConn);
-		}
+		}*/
 
 		super.onDestroy();
 	}
 
 	private void loadFbAd() {
-		fbInterstitialAd = new com.facebook.ads.InterstitialAd(this, "2363436417216774_2382459975314418");
+		fbInterstitialAd = new com.facebook.ads.InterstitialAd(this, "2363436417216774_2385425541684528");
 		// Set listeners for the Interstitial Ad
 		fbInterstitialAd.setAdListener(new InterstitialAdListener() {
 			@Override
@@ -361,24 +349,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 
 	}
 
-	public static boolean isInternetIsConnected(Context context) {
-		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-		if (activeNetwork != null) { // connected to the internet
-			if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-				// connected to wifi
-				return true;
 
-			} else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-				// connected to the mobile provider's data plan
-				return true;
-			}
-		} else {
-			// not connected to the internet
-			return false;
-		}
-		return false;
-	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -397,13 +368,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		//outState.putSerializable(VIDEO_BLOCKER_PLUGIN, videoBlockerPlugin);
 	}
 
-	public static boolean isPurchased = false;
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		staticContext = this;
-		isPurchased = inAppPurchaseVerification();
+
 		// Activity may be destroyed when the devices is rotated, so we need to make sure that the
 		// channel play list is holding a reference to the activity being currently in use...
 		if (channelBrowserFragment != null)
@@ -488,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 				videoBlockerPlugin.onMenuBlockerIconClicked();
 				return true;*/
 			case R.id.menu_preferences:
-                if (!isPurchased && mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                if (!AppLaunchActivity.isPurchased && mInterstitialAd != null && mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
                 } else {
                     Timber.d("The interstitial wasn't loaded yet.");
@@ -507,6 +477,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 			case R.id.menu_remove_ads:
 				DialogHelper.showDialog(MainActivity.this, DonationFragment.class, DialogHelper.TAG_FRAGMENT_DONATION);
 				return true;
+			case R.id.menu_share_vibe:
+				shareVibe();
+				return true;
 			case android.R.id.home:
 				if(mainFragment == null || !mainFragment.isVisible()) {
 					onBackPressed();
@@ -517,73 +490,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void shareVibe() {
+		final VibeShareBottomDialog dialog = new VibeShareBottomDialog(this);
+		dialog.show();
+	}
 
 	/*@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 	}*/
-	public static MySQLiteHelper db;
-	private static IInAppBillingService mService;
-	private static ServiceConnection mServiceConn = new ServiceConnection() {
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mService = null;
-		}
 
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			mService = IInAppBillingService.Stub.asInterface(service);
-		}
-	};
 
-	public static boolean inAppPurchaseVerification() {
-		boolean isPurchased = false;
 
-		if (db.getAllIAP() > 0) {
-			return true;
-		}
-
-		Intent serviceIntent = new Intent(
-				"com.android.vending.billing.InAppBillingService.BIND");
-		serviceIntent.setPackage("com.android.vending");
-		staticContext.startService(serviceIntent);
-		staticContext.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
-
-		if (mService == null || staticContext == null) {
-			return false;
-		}
-
-		Bundle ownedItems;
-		try {
-			ownedItems = mService.getPurchases(3, staticContext.getPackageName(), "inapp", null);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			return isPurchased;
-		}
-
-		int response = ownedItems.getInt("RESPONSE_CODE");
-
-		if (response != 0) return isPurchased;
-
-		ArrayList<String> ownedSkus = ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-		/*ArrayList<String> purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-		ArrayList<String> signatureList = ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE");
-		String continuationToken = ownedItems.getString("INAPP_CONTINUATION_TOKEN");*/
-
-		if (ownedSkus != null && ownedSkus.size() > 0) {
-			for (int i = 0; i < ownedSkus.size(); ++i) {
-				String sku = ownedSkus.get(i);
-				if (DonationItems.items.contains(sku)) {
-					isPurchased = true;
-					db. addIAP(sku);
-					//break;
-				}
-
-			}
-		}
-
-		return isPurchased;
-	}
 
 
 	/**
@@ -688,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityListe
 		progressBar = (ProgressBar) md.findViewById(R.id.progressBar);
 		progressBar.setVisibility(View.GONE);
 		//textView.setText(R.string.exit_msg);
-		if (!isPurchased) {
+		if (!AppLaunchActivity.isPurchased) {
 			loadNativeAd(md);
 		}
 		md.setOnDismissListener(new DialogInterface.OnDismissListener() {

@@ -61,7 +61,7 @@ import static free.rm.skytube.app.SkyTubeApp.getStr;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.AUDIO;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.UNDERSCORE;
 import static free.rm.skytube.businessobjects.db.DownloadedVideosDb.VIDEO;
-import static free.rm.skytube.gui.activities.MainActivity.isPurchased;
+import static free.rm.skytube.gui.activities.AppLaunchActivity.isPurchased;
 
 public class YoutubeDownloader  {
 

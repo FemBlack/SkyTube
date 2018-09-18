@@ -31,15 +31,18 @@
 				android:name="android.support.FILE_PROVIDER_PATHS"
 				android:resource="@xml/provider_paths"/>
 		</provider>
-
 		<activity
-			android:name=".gui.activities.MainActivity"
-			android:theme="@style/NoActionBarActivityTheme">
+			android:name=".gui.activities.AppLaunchActivity"
+			android:theme="@style/SplashTheme">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
+		</activity>
+		<activity
+			android:name=".gui.activities.MainActivity"
+			android:theme="@style/NoActionBarActivityTheme">
 		</activity>
 		<activity
 			android:name=".gui.activities.YouTubePlayerActivity"
